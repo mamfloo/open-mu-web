@@ -13,11 +13,10 @@ export default function News() {
           hope this projects will help people with their MU.
           </p>
           <br />
-          <br />
           <p className='font-semibold text-lg'>Features:</p> <br />
           <p>Character Panel:</p>
           <ul>
-            <li className='ml-5'>Reset system, can choose at what level to reset and the price to reset</li>
+            <li className='ml-5'>Reset system, can choose at what level to reset, max reset and the cost of reset. </li>
             <li className='ml-5'>Add Stats</li>
             <li className='ml-5'>ClearPk, can choose the price</li>
           </ul>
@@ -42,10 +41,10 @@ export default function News() {
           </ul>
           <br />
           <p>Register new Account</p>
-          <br />
           <p>Downlaod Section</p>
-          <br />
-          <p>Info section</p>
+          <p>Info Section</p>
+          <p>News Section</p>
+          <p>Terms and Conditions</p>
         </div>
       </div>
       <h2></h2>

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
-    const { name } = await req.json()
+    const { name, clasId } = await req.json()
     
     //CHECKS
     //check if the right user is sending the request
@@ -27,6 +27,17 @@ export async function POST(req: Request){
         return NextResponse.json({message: "Disconnect from your account!"}, {status: 400})
     };
 
+    //select the right map and coordinates x,y to reset the character to
+    const elfAray = ["00000040-000b-0000-0000-000000000000", "00000040-000a-0000-0000-000000000000", "00000040-0008-0000-0000-000000000000"];
+    const sumArray = ["00000040-0017-0000-0000-000000000000", "00000040-0016-0000-0000-000000000000", "00000040-0014-0000-0000-000000000000"];
+    const lorenciaMap = "00000300-0000-0000-0000-000000000000";
+    const noriaMap = "00000300-0003-0000-0000-000000000000";
+    const elbelandMap = "00000300-0033-0000-0000-000000000000";
+    const finalMap = elfAray.includes(clasId) ? noriaMap : sumArray.includes(clasId) ? elbelandMap : lorenciaMap;
+    console.log(clasId)
+    console.log(finalMap);
+    const posX = finalMap == noriaMap ? 176 : finalMap == elbelandMap ? 51 : 141;
+    const posY = finalMap == noriaMap ? 116 : finalMap == elbelandMap ? 226 : 121;
     //RESET AND ZEN TO RESET SETTED IN .ENV
     const lvlToReset = +process.env.LVL_TO_RESET!
     const zen = +process.env.ZEN_TO_RESET!
@@ -99,7 +110,18 @@ export async function POST(req: Request){
                 END
             FROM "data"."Character" c
             WHERE sa."CharacterId" = c."Id" 
-              AND c."Name" = ${name};`
+              AND c."Name" = ${name};`,
+            //set the map to lorencia/noria/embeland
+            prisma.character.updateMany({
+              where: {
+                Name: name
+              },
+              data: {
+                CurrentMapId: finalMap,
+                PositionX: posX,
+                PositionY: posY
+              }
+            })
         ])
     } else {
         return NextResponse.json({message: "You aren't lvl " + lvlToReset + " or you are at maximum reset " + maxReset}, {status: 400});

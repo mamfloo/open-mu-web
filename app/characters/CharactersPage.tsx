@@ -10,6 +10,7 @@ import { useState } from "react";
 import { getImage } from "@/app/_utils/characterAvatarReturn";
 import { CharacterEdit } from "../_models/characterEdit";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function CharactersPage({result}: {result: CharacterEdit[]}) {
     //track which cards are open
@@ -27,24 +28,28 @@ export default function CharactersPage({result}: {result: CharacterEdit[]}) {
         setCharacters(arr);     
     }
 
+    const router = useRouter();
     //request the reset of the character
-    async function resetCharacter(name: string){
+    async function resetCharacter(name: string, clasId: string){
         const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/reset`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                name: name
+                name: name,
+                clasId: clasId
             })
         })
-        const body = await response.json()
+        const body = await response.json();
         if(response.ok){
-            toast.success(body.message)
+            toast.success(body.message);
+            router.refresh();
         } else {
-            toast.error(body.message)
+            toast.error(body.message);
         }
     }
+
     //request pk clear of character
     async function pkClear(name: string){
         const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/pkclear`,{
@@ -70,15 +75,21 @@ export default function CharactersPage({result}: {result: CharacterEdit[]}) {
        {result?.map((c, i) => (
         <div key={c.name}>
             <div className="p-4 bg-secondary/[0.2] rounded-lg flex gap-2 justify-between">
-                <p className="text-xl text-primary"><Image src={getImage(c.characterClassId) as StaticImport} alt={"character_avatar"} width={40} className="inline-block rounded-lg shadow-lg shadow-slate-600" /> {c.name}</p>
+                <div className="flex flex-col text-primary">
+                    <p className="text-xl text-primary"><Image src={getImage(c.characterClassId) as StaticImport} alt={"character_avatar"} width={40} 
+                    className="inline-block rounded-lg shadow-lg shadow-slate-600" /> {c.name} </p>
+                    <p className="mt-3"> Resets: <span className=" font-semibold ml-1 text-primary">{c.resets}</span></p>
+                    <p>Lvl: <span className=" font-semibold ml-1 text-primary">{c.lvl}</span></p>
+                    <p>Master Lvl: <span className=" font-semibold ml-1 text-primary">{c.masterlvl}</span></p>
+                </div>
                 <div className="flex justify-between mr-2 gap-2">
-                    <button className="bg-primary/[0.1] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetCharacter(c.name)}>
+                    <button className="h-fit bg-primary/[0.1] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetCharacter(c.name, c.characterClassId)}>
                         <Image src={ResetIcon} width={25} alt={"reset_icon"} className="inline-block mb-1"></Image> Reset
                     </button>   
-                    <button className="bg-primary/[0.2] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => openStatistic(i)}>
+                    <button className="h-fit bg-primary/[0.2] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => openStatistic(i)}>
                         <Image src={AddStatsIcon} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Add Stats
                     </button>
-                    <button className="bg-primary/[0.3] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => pkClear(c.name)}>
+                    <button className="h-fit bg-primary/[0.3] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => pkClear(c.name)}>
                         <Image src={ClearPkIcon} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Pk Clear
                     </button>
                 </div>
