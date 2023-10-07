@@ -1,0 +1,1714 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["config", "data", "friend", "guild", "public"]
+}
+
+model AttributeDefinition {
+  Id                                                                                  String                      @id(map: "PK_AttributeDefinition") @db.Uuid
+  GameConfigurationId                                                                 String?                     @db.Uuid
+  Designation                                                                         String?
+  Description                                                                         String?
+  GameConfiguration                                                                   GameConfiguration?          @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeDefinition_GameConfiguration_GameConfigurationId")
+  AttributeRelationship_AttributeRelationship_InputAttributeIdToAttributeDefinition   AttributeRelationship[]     @relation("AttributeRelationship_InputAttributeIdToAttributeDefinition")
+  AttributeRelationship_AttributeRelationship_OperandAttributeIdToAttributeDefinition AttributeRelationship[]     @relation("AttributeRelationship_OperandAttributeIdToAttributeDefinition")
+  AttributeRelationship_AttributeRelationship_TargetAttributeIdToAttributeDefinition  AttributeRelationship[]     @relation("AttributeRelationship_TargetAttributeIdToAttributeDefinition")
+  AttributeRequirement                                                                AttributeRequirement[]
+  ConstValueAttribute                                                                 ConstValueAttribute[]
+  ItemBasePowerUpDefinition                                                           ItemBasePowerUpDefinition[]
+  MasterSkillDefinition                                                               MasterSkillDefinition[]
+  MonsterAttribute                                                                    MonsterAttribute[]
+  PowerUpDefinition                                                                   PowerUpDefinition[]
+  QuestReward                                                                         QuestReward[]
+  Skill                                                                               Skill[]
+  StatAttributeDefinition                                                             StatAttributeDefinition[]
+  StatAttribute                                                                       StatAttribute[]
+
+  @@index([GameConfigurationId], map: "IX_AttributeDefinition_GameConfigurationId")
+  @@schema("config")
+}
+
+model AttributeRelationship {
+  Id                                                                                String                  @id(map: "PK_AttributeRelationship") @db.Uuid
+  TargetAttributeId                                                                 String?                 @db.Uuid
+  InputAttributeId                                                                  String?                 @db.Uuid
+  CharacterClassId                                                                  String?                 @db.Uuid
+  PowerUpDefinitionValueId                                                          String?                 @db.Uuid
+  InputOperator                                                                     Int
+  InputOperand                                                                      Float                   @db.Real
+  OperandAttributeId                                                                String?                 @db.Uuid
+  AttributeDefinition_AttributeRelationship_InputAttributeIdToAttributeDefinition   AttributeDefinition?    @relation("AttributeRelationship_InputAttributeIdToAttributeDefinition", fields: [InputAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AttributeRelationship_AttributeDefinition_InputAttributeId")
+  AttributeDefinition_AttributeRelationship_OperandAttributeIdToAttributeDefinition AttributeDefinition?    @relation("AttributeRelationship_OperandAttributeIdToAttributeDefinition", fields: [OperandAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AttributeRelationship_AttributeDefinition_OperandAttributeId")
+  AttributeDefinition_AttributeRelationship_TargetAttributeIdToAttributeDefinition  AttributeDefinition?    @relation("AttributeRelationship_TargetAttributeIdToAttributeDefinition", fields: [TargetAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AttributeRelationship_AttributeDefinition_TargetAttributeId")
+  CharacterClass                                                                    CharacterClass?         @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRelationship_CharacterClass_CharacterClassId")
+  PowerUpDefinitionValue                                                            PowerUpDefinitionValue? @relation(fields: [PowerUpDefinitionValueId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRelationship_PowerUpDefinitionValue_PowerUpDefinit~")
+
+  @@index([CharacterClassId], map: "IX_AttributeRelationship_CharacterClassId")
+  @@index([InputAttributeId], map: "IX_AttributeRelationship_InputAttributeId")
+  @@index([OperandAttributeId], map: "IX_AttributeRelationship_OperandAttributeId")
+  @@index([PowerUpDefinitionValueId], map: "IX_AttributeRelationship_PowerUpDefinitionValueId")
+  @@index([TargetAttributeId], map: "IX_AttributeRelationship_TargetAttributeId")
+  @@schema("config")
+}
+
+model AttributeRequirement {
+  Id                                         String               @id(map: "PK_AttributeRequirement") @db.Uuid
+  AttributeId                                String?              @db.Uuid
+  GameMapDefinitionId                        String?              @db.Uuid
+  ItemDefinitionId                           String?              @db.Uuid
+  SkillId                                    String?              @db.Uuid
+  SkillId1                                   String?              @db.Uuid
+  MinimumValue                               Int
+  AttributeDefinition                        AttributeDefinition? @relation(fields: [AttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AttributeRequirement_AttributeDefinition_AttributeId")
+  GameMapDefinition                          GameMapDefinition?   @relation(fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRequirement_GameMapDefinition_GameMapDefinitionId")
+  ItemDefinition                             ItemDefinition?      @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRequirement_ItemDefinition_ItemDefinitionId")
+  Skill_AttributeRequirement_SkillIdToSkill  Skill?               @relation("AttributeRequirement_SkillIdToSkill", fields: [SkillId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRequirement_Skill_SkillId")
+  Skill_AttributeRequirement_SkillId1ToSkill Skill?               @relation("AttributeRequirement_SkillId1ToSkill", fields: [SkillId1], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AttributeRequirement_Skill_SkillId1")
+
+  @@index([AttributeId], map: "IX_AttributeRequirement_AttributeId")
+  @@index([GameMapDefinitionId], map: "IX_AttributeRequirement_GameMapDefinitionId")
+  @@index([ItemDefinitionId], map: "IX_AttributeRequirement_ItemDefinitionId")
+  @@index([SkillId], map: "IX_AttributeRequirement_SkillId")
+  @@index([SkillId1], map: "IX_AttributeRequirement_SkillId1")
+  @@schema("config")
+}
+
+model BattleZoneDefinition {
+  Id                                                    String             @id(map: "PK_BattleZoneDefinition") @db.Uuid
+  GroundId                                              String?            @unique(map: "IX_BattleZoneDefinition_GroundId") @db.Uuid
+  LeftGoalId                                            String?            @unique(map: "IX_BattleZoneDefinition_LeftGoalId") @db.Uuid
+  RightGoalId                                           String?            @unique(map: "IX_BattleZoneDefinition_RightGoalId") @db.Uuid
+  Type                                                  Int
+  LeftTeamSpawnPointX                                   Int?               @db.SmallInt
+  LeftTeamSpawnPointY                                   Int                @db.SmallInt
+  RightTeamSpawnPointX                                  Int?               @db.SmallInt
+  RightTeamSpawnPointY                                  Int                @db.SmallInt
+  Rectangle_BattleZoneDefinition_GroundIdToRectangle    Rectangle?         @relation("BattleZoneDefinition_GroundIdToRectangle", fields: [GroundId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_BattleZoneDefinition_Rectangle_GroundId")
+  Rectangle_BattleZoneDefinition_LeftGoalIdToRectangle  Rectangle?         @relation("BattleZoneDefinition_LeftGoalIdToRectangle", fields: [LeftGoalId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_BattleZoneDefinition_Rectangle_LeftGoalId")
+  Rectangle_BattleZoneDefinition_RightGoalIdToRectangle Rectangle?         @relation("BattleZoneDefinition_RightGoalIdToRectangle", fields: [RightGoalId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_BattleZoneDefinition_Rectangle_RightGoalId")
+  GameMapDefinition                                     GameMapDefinition?
+
+  @@schema("config")
+}
+
+model CharacterClass {
+  Id                                   String                         @id(map: "PK_CharacterClass") @db.Uuid
+  NextGenerationClassId                String?                        @db.Uuid
+  HomeMapId                            String?                        @db.Uuid
+  GameConfigurationId                  String?                        @db.Uuid
+  Number                               Int                            @db.SmallInt
+  Name                                 String
+  CanGetCreated                        Boolean
+  LevelRequirementByCreation           Int                            @db.SmallInt
+  CreationAllowedFlag                  Int                            @db.SmallInt
+  IsMasterClass                        Boolean
+  LevelWarpRequirementReductionPercent Int
+  FruitCalculation                     Int
+  ComboDefinitionId                    String?                        @unique(map: "IX_CharacterClass_ComboDefinitionId") @db.Uuid
+  AttributeRelationship                AttributeRelationship[]
+  CharacterClass                       CharacterClass?                @relation("CharacterClassToCharacterClass", fields: [NextGenerationClassId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CharacterClass_CharacterClass_NextGenerationClassId")
+  other_CharacterClass                 CharacterClass[]               @relation("CharacterClassToCharacterClass")
+  GameConfiguration                    GameConfiguration?             @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CharacterClass_GameConfiguration_GameConfigurationId")
+  GameMapDefinition                    GameMapDefinition?             @relation(fields: [HomeMapId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CharacterClass_GameMapDefinition_HomeMapId")
+  SkillComboDefinition                 SkillComboDefinition?          @relation(fields: [ComboDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CharacterClass_SkillComboDefinition_ComboDefinitionId")
+  ConstValueAttribute                  ConstValueAttribute[]
+  ItemDefinitionCharacterClass         ItemDefinitionCharacterClass[]
+  QuestDefinition                      QuestDefinition[]
+  SkillCharacterClass                  SkillCharacterClass[]
+  StatAttributeDefinition              StatAttributeDefinition[]
+  AccountCharacterClass                AccountCharacterClass[]
+  AppearanceData                       AppearanceData[]
+  Character                            Character[]
+
+  @@index([GameConfigurationId], map: "IX_CharacterClass_GameConfigurationId")
+  @@index([HomeMapId], map: "IX_CharacterClass_HomeMapId")
+  @@index([NextGenerationClassId], map: "IX_CharacterClass_NextGenerationClassId")
+  @@schema("config")
+}
+
+model ChatServerDefinition {
+  Id                    String                  @id(map: "PK_ChatServerDefinition") @db.Uuid
+  ServerId              Int                     @db.SmallInt
+  Description           String
+  MaximumConnections    Int
+  ClientTimeout         Unsupported("interval")
+  ClientCleanUpInterval Unsupported("interval")
+  RoomCleanUpInterval   Unsupported("interval")
+  ChatServerEndpoint    ChatServerEndpoint[]
+
+  @@schema("config")
+}
+
+model ChatServerEndpoint {
+  Id                     String                @id(map: "PK_ChatServerEndpoint") @db.Uuid
+  ClientId               String?               @db.Uuid
+  ChatServerDefinitionId String?               @db.Uuid
+  NetworkPort            Int
+  ChatServerDefinition   ChatServerDefinition? @relation(fields: [ChatServerDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ChatServerEndpoint_ChatServerDefinition_ChatServerDefinitio~")
+  GameClientDefinition   GameClientDefinition? @relation(fields: [ClientId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ChatServerEndpoint_GameClientDefinition_ClientId")
+
+  @@index([ChatServerDefinitionId], map: "IX_ChatServerEndpoint_ChatServerDefinitionId")
+  @@index([ClientId], map: "IX_ChatServerEndpoint_ClientId")
+  @@schema("config")
+}
+
+model CombinationBonusRequirement {
+  Id                           String                      @id(map: "PK_CombinationBonusRequirement") @db.Uuid
+  OptionTypeId                 String?                     @db.Uuid
+  ItemOptionCombinationBonusId String?                     @db.Uuid
+  SubOptionType                Int
+  MinimumCount                 Int
+  ItemOptionCombinationBonus   ItemOptionCombinationBonus? @relation(fields: [ItemOptionCombinationBonusId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CombinationBonusRequirement_ItemOptionCombinationBonus_Item~")
+  ItemOptionType               ItemOptionType?             @relation(fields: [OptionTypeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CombinationBonusRequirement_ItemOptionType_OptionTypeId")
+
+  @@index([ItemOptionCombinationBonusId], map: "IX_CombinationBonusRequirement_ItemOptionCombinationBonusId")
+  @@index([OptionTypeId], map: "IX_CombinationBonusRequirement_OptionTypeId")
+  @@schema("config")
+}
+
+model ConfigurationUpdate {
+  Id          String    @id(map: "PK_ConfigurationUpdate") @db.Uuid
+  Version     Int
+  Name        String?
+  Description String?
+  CreatedAt   DateTime? @db.Timestamptz(6)
+  InstalledAt DateTime? @db.Timestamptz(6)
+
+  @@schema("config")
+}
+
+model ConfigurationUpdateState {
+  Id                      String  @id(map: "PK_ConfigurationUpdateState") @db.Uuid
+  InitializationKey       String?
+  CurrentInstalledVersion Int
+
+  @@schema("config")
+}
+
+model ConnectServerDefinition {
+  Id                            String                  @id(map: "PK_ConnectServerDefinition") @db.Uuid
+  ClientId                      String?                 @db.Uuid
+  ServerId                      Int                     @db.SmallInt
+  Description                   String
+  DisconnectOnUnknownPacket     Boolean
+  MaximumReceiveSize            Int                     @db.SmallInt
+  ClientListenerPort            Int
+  Timeout                       Unsupported("interval")
+  CurrentPatchVersion           Bytes?
+  PatchAddress                  String
+  MaxConnectionsPerAddress      Int
+  CheckMaxConnectionsPerAddress Boolean
+  MaxConnections                Int
+  ListenerBacklog               Int
+  MaxFtpRequests                Int
+  MaxIpRequests                 Int
+  MaxServerListRequests         Int
+  GameClientDefinition          GameClientDefinition?   @relation(fields: [ClientId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ConnectServerDefinition_GameClientDefinition_ClientId")
+
+  @@index([ClientId], map: "IX_ConnectServerDefinition_ClientId")
+  @@schema("config")
+}
+
+model ConstValueAttribute {
+  Id                  String               @id(map: "PK_ConstValueAttribute") @db.Uuid
+  DefinitionId        String?              @db.Uuid
+  CharacterClassId    String               @db.Uuid
+  Value               Float                @db.Real
+  AttributeDefinition AttributeDefinition? @relation(fields: [DefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ConstValueAttribute_AttributeDefinition_DefinitionId")
+  CharacterClass      CharacterClass       @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ConstValueAttribute_CharacterClass_CharacterClassId")
+
+  @@index([CharacterClassId], map: "IX_ConstValueAttribute_CharacterClassId")
+  @@index([DefinitionId], map: "IX_ConstValueAttribute_DefinitionId")
+  @@schema("config")
+}
+
+model DropItemGroup {
+  Id                             String                           @id(map: "PK_DropItemGroup") @db.Uuid
+  MonsterId                      String?                          @db.Uuid
+  GameConfigurationId            String?                          @db.Uuid
+  Description                    String
+  Chance                         Float
+  MinimumMonsterLevel            Int?                             @db.SmallInt
+  MaximumMonsterLevel            Int?                             @db.SmallInt
+  ItemLevel                      Int?                             @db.SmallInt
+  ItemType                       Int
+  GameConfiguration              GameConfiguration?               @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_DropItemGroup_GameConfiguration_GameConfigurationId")
+  MonsterDefinition              MonsterDefinition?               @relation(fields: [MonsterId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_DropItemGroup_MonsterDefinition_MonsterId")
+  DropItemGroupItemDefinition    DropItemGroupItemDefinition[]
+  GameMapDefinitionDropItemGroup GameMapDefinitionDropItemGroup[]
+  MiniGameReward                 MiniGameReward[]
+  MonsterDefinitionDropItemGroup MonsterDefinitionDropItemGroup[]
+  QuestItemRequirement           QuestItemRequirement[]
+  CharacterDropItemGroup         CharacterDropItemGroup[]
+
+  @@index([GameConfigurationId], map: "IX_DropItemGroup_GameConfigurationId")
+  @@index([MonsterId], map: "IX_DropItemGroup_MonsterId")
+  @@schema("config")
+}
+
+model DropItemGroupItemDefinition {
+  DropItemGroupId  String         @db.Uuid
+  ItemDefinitionId String         @db.Uuid
+  DropItemGroup    DropItemGroup  @relation(fields: [DropItemGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_DropItemGroupItemDefinition_DropItemGroup_DropItemGroupId")
+  ItemDefinition   ItemDefinition @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_DropItemGroupItemDefinition_ItemDefinition_ItemDefinitionId")
+
+  @@id([DropItemGroupId, ItemDefinitionId], map: "PK_DropItemGroupItemDefinition")
+  @@index([ItemDefinitionId], map: "IX_DropItemGroupItemDefinition_ItemDefinitionId")
+  @@schema("config")
+}
+
+model EnterGate {
+  Id                  String             @id(map: "PK_EnterGate") @db.Uuid
+  TargetGateId        String?            @db.Uuid
+  GameMapDefinitionId String?            @db.Uuid
+  X1                  Int                @db.SmallInt
+  Y1                  Int                @db.SmallInt
+  X2                  Int                @db.SmallInt
+  Y2                  Int                @db.SmallInt
+  LevelRequirement    Int                @db.SmallInt
+  Number              Int                @db.SmallInt
+  ExitGate            ExitGate?          @relation(fields: [TargetGateId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_EnterGate_ExitGate_TargetGateId")
+  GameMapDefinition   GameMapDefinition? @relation(fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_EnterGate_GameMapDefinition_GameMapDefinitionId")
+
+  @@index([GameMapDefinitionId], map: "IX_EnterGate_GameMapDefinitionId")
+  @@index([TargetGateId], map: "IX_EnterGate_TargetGateId")
+  @@schema("config")
+}
+
+model ExitGate {
+  Id                 String               @id(map: "PK_ExitGate") @db.Uuid
+  MapId              String?              @db.Uuid
+  X1                 Int                  @db.SmallInt
+  Y1                 Int                  @db.SmallInt
+  X2                 Int                  @db.SmallInt
+  Y2                 Int                  @db.SmallInt
+  Direction          Int
+  IsSpawnGate        Boolean
+  EnterGate          EnterGate[]
+  GameMapDefinition  GameMapDefinition?   @relation(fields: [MapId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ExitGate_GameMapDefinition_MapId")
+  MiniGameDefinition MiniGameDefinition[]
+  WarpInfo           WarpInfo[]
+
+  @@index([MapId], map: "IX_ExitGate_MapId")
+  @@schema("config")
+}
+
+model GameClientDefinition {
+  Id                      String                    @id(map: "PK_GameClientDefinition") @db.Uuid
+  Season                  Int                       @db.SmallInt
+  Episode                 Int                       @db.SmallInt
+  Language                Int
+  Version                 Bytes?
+  Serial                  Bytes?
+  Description             String
+  ChatServerEndpoint      ChatServerEndpoint[]
+  ConnectServerDefinition ConnectServerDefinition[]
+  GameServerEndpoint      GameServerEndpoint[]
+
+  @@schema("config")
+}
+
+model GameConfiguration {
+  Id                                     String                       @id(map: "PK_GameConfiguration") @db.Uuid
+  MaximumLevel                           Int                          @db.SmallInt
+  MaximumMasterLevel                     Int                          @db.SmallInt
+  ExperienceRate                         Float                        @db.Real
+  MinimumMonsterLevelForMasterExperience Int                          @db.SmallInt
+  InfoRange                              Int                          @db.SmallInt
+  AreaSkillHitsPlayer                    Boolean
+  MaximumInventoryMoney                  Int
+  MaximumVaultMoney                      Int
+  RecoveryInterval                       Int
+  MaximumLetters                         Int
+  LetterSendPrice                        Int
+  MaximumCharactersPerAccount            Int                          @db.SmallInt
+  CharacterNameRegex                     String?
+  MaximumPasswordLength                  Int
+  MaximumPartySize                       Int                          @db.SmallInt
+  ShouldDropMoney                        Boolean
+  DamagePerOneItemDurability             Float
+  DamagePerOnePetDurability              Float
+  HitsPerOneItemDurability               Float
+  ItemDropDuration                       Unsupported("interval")      @default(dbgenerated("'00:01:00'::interval"))
+  AttributeDefinition                    AttributeDefinition[]
+  CharacterClass                         CharacterClass[]
+  DropItemGroup                          DropItemGroup[]
+  GameMapDefinition                      GameMapDefinition[]
+  GameServerDefinition                   GameServerDefinition[]
+  ItemDefinition                         ItemDefinition[]
+  ItemLevelBonusTable                    ItemLevelBonusTable[]
+  ItemOptionCombinationBonus             ItemOptionCombinationBonus[]
+  ItemOptionDefinition                   ItemOptionDefinition[]
+  ItemOptionType                         ItemOptionType[]
+  ItemSetGroup                           ItemSetGroup[]
+  ItemSlotType                           ItemSlotType[]
+  JewelMix                               JewelMix[]
+  MagicEffectDefinition                  MagicEffectDefinition[]
+  MasterSkillRoot                        MasterSkillRoot[]
+  MiniGameDefinition                     MiniGameDefinition[]
+  MonsterDefinition                      MonsterDefinition[]
+  PlugInConfiguration                    PlugInConfiguration[]
+  Skill                                  Skill[]
+  WarpInfo                               WarpInfo[]
+
+  @@schema("config")
+}
+
+model GameMapDefinition {
+  Id                                                                       String                                     @id(map: "PK_GameMapDefinition") @db.Uuid
+  SafezoneMapId                                                            String?                                    @db.Uuid
+  BattleZoneId                                                             String?                                    @unique(map: "IX_GameMapDefinition_BattleZoneId") @db.Uuid
+  GameConfigurationId                                                      String?                                    @db.Uuid
+  Number                                                                   Int                                        @db.SmallInt
+  Name                                                                     String
+  TerrainData                                                              Bytes?
+  ExpMultiplier                                                            Float
+  Discriminator                                                            Int
+  AttributeRequirement                                                     AttributeRequirement[]
+  CharacterClass                                                           CharacterClass[]
+  EnterGate                                                                EnterGate[]
+  ExitGate                                                                 ExitGate[]
+  BattleZoneDefinition                                                     BattleZoneDefinition?                      @relation(fields: [BattleZoneId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameMapDefinition_BattleZoneDefinition_BattleZoneId")
+  GameConfiguration                                                        GameConfiguration?                         @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameMapDefinition_GameConfiguration_GameConfigurationId")
+  GameMapDefinition                                                        GameMapDefinition?                         @relation("GameMapDefinitionToGameMapDefinition", fields: [SafezoneMapId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_GameMapDefinition_GameMapDefinition_SafezoneMapId")
+  other_GameMapDefinition                                                  GameMapDefinition[]                        @relation("GameMapDefinitionToGameMapDefinition")
+  GameMapDefinitionDropItemGroup                                           GameMapDefinitionDropItemGroup[]
+  GameServerConfigurationGameMapDefinition                                 GameServerConfigurationGameMapDefinition[]
+  MonsterSpawnArea_MonsterSpawnArea_GameMapDefinitionIdToGameMapDefinition MonsterSpawnArea[]                         @relation("MonsterSpawnArea_GameMapDefinitionIdToGameMapDefinition")
+  MonsterSpawnArea_MonsterSpawnArea_GameMapIdToGameMapDefinition           MonsterSpawnArea[]                         @relation("MonsterSpawnArea_GameMapIdToGameMapDefinition")
+  PowerUpDefinition                                                        PowerUpDefinition[]
+  Character                                                                Character[]
+
+  @@index([GameConfigurationId], map: "IX_GameMapDefinition_GameConfigurationId")
+  @@index([SafezoneMapId], map: "IX_GameMapDefinition_SafezoneMapId")
+  @@schema("config")
+}
+
+model GameMapDefinitionDropItemGroup {
+  GameMapDefinitionId String            @db.Uuid
+  DropItemGroupId     String            @db.Uuid
+  DropItemGroup       DropItemGroup     @relation(fields: [DropItemGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameMapDefinitionDropItemGroup_DropItemGroup_DropItemGroupId")
+  GameMapDefinition   GameMapDefinition @relation(fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameMapDefinitionDropItemGroup_GameMapDefinition_GameMapDef~")
+
+  @@id([GameMapDefinitionId, DropItemGroupId], map: "PK_GameMapDefinitionDropItemGroup")
+  @@index([DropItemGroupId], map: "IX_GameMapDefinitionDropItemGroup_DropItemGroupId")
+  @@schema("config")
+}
+
+model GameServerConfiguration {
+  Id                                       String                                     @id(map: "PK_GameServerConfiguration") @db.Uuid
+  MaximumPlayers                           Int                                        @db.SmallInt
+  GameServerConfigurationGameMapDefinition GameServerConfigurationGameMapDefinition[]
+  GameServerDefinition                     GameServerDefinition[]
+
+  @@schema("config")
+}
+
+model GameServerConfigurationGameMapDefinition {
+  GameServerConfigurationId String                  @db.Uuid
+  GameMapDefinitionId       String                  @db.Uuid
+  GameMapDefinition         GameMapDefinition       @relation(fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameServerConfigurationGameMapDefinition_GameMapDefinition_~")
+  GameServerConfiguration   GameServerConfiguration @relation(fields: [GameServerConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameServerConfigurationGameMapDefinition_GameServerConfigur~")
+
+  @@id([GameServerConfigurationId, GameMapDefinitionId], map: "PK_GameServerConfigurationGameMapDefinition")
+  @@index([GameMapDefinitionId], map: "IX_GameServerConfigurationGameMapDefinition_GameMapDefinitionId")
+  @@schema("config")
+}
+
+model GameServerDefinition {
+  Id                      String                   @id(map: "PK_GameServerDefinition") @db.Uuid
+  ServerConfigurationId   String?                  @db.Uuid
+  GameConfigurationId     String?                  @db.Uuid
+  ServerID                Int                      @db.SmallInt
+  Description             String
+  ExperienceRate          Float                    @db.Real
+  GameConfiguration       GameConfiguration?       @relation(fields: [GameConfigurationId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_GameServerDefinition_GameConfiguration_GameConfigurationId")
+  GameServerConfiguration GameServerConfiguration? @relation(fields: [ServerConfigurationId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_GameServerDefinition_GameServerConfiguration_ServerConfigur~")
+  GameServerEndpoint      GameServerEndpoint[]
+
+  @@index([GameConfigurationId], map: "IX_GameServerDefinition_GameConfigurationId")
+  @@index([ServerConfigurationId], map: "IX_GameServerDefinition_ServerConfigurationId")
+  @@schema("config")
+}
+
+model GameServerEndpoint {
+  Id                       String                @id(map: "PK_GameServerEndpoint") @db.Uuid
+  ClientId                 String?               @db.Uuid
+  GameServerDefinitionId   String?               @db.Uuid
+  NetworkPort              Int
+  AlternativePublishedPort Int
+  GameClientDefinition     GameClientDefinition? @relation(fields: [ClientId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_GameServerEndpoint_GameClientDefinition_ClientId")
+  GameServerDefinition     GameServerDefinition? @relation(fields: [GameServerDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GameServerEndpoint_GameServerDefinition_GameServerDefinitio~")
+
+  @@index([ClientId], map: "IX_GameServerEndpoint_ClientId")
+  @@index([GameServerDefinitionId], map: "IX_GameServerEndpoint_GameServerDefinitionId")
+  @@schema("config")
+}
+
+model IncreasableItemOption {
+  Id                     String                @id(map: "PK_IncreasableItemOption") @db.Uuid
+  OptionTypeId           String?               @db.Uuid
+  PowerUpDefinitionId    String?               @unique(map: "IX_IncreasableItemOption_PowerUpDefinitionId") @db.Uuid
+  ItemOptionDefinitionId String?               @db.Uuid
+  ItemSetGroupId         String?               @db.Uuid
+  Number                 Int
+  SubOptionType          Int
+  LevelType              Int
+  ItemOptionDefinition   ItemOptionDefinition? @relation(fields: [ItemOptionDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_IncreasableItemOption_ItemOptionDefinition_ItemOptionDefini~")
+  ItemOptionType         ItemOptionType?       @relation(fields: [OptionTypeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IncreasableItemOption_ItemOptionType_OptionTypeId")
+  ItemSetGroup           ItemSetGroup?         @relation(fields: [ItemSetGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_IncreasableItemOption_ItemSetGroup_ItemSetGroupId")
+  PowerUpDefinition      PowerUpDefinition?    @relation(fields: [PowerUpDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_IncreasableItemOption_PowerUpDefinition_PowerUpDefinitionId")
+  ItemOfItemSet          ItemOfItemSet[]
+  ItemOptionOfLevel      ItemOptionOfLevel[]
+  ItemOptionLink         ItemOptionLink[]
+
+  @@index([ItemOptionDefinitionId], map: "IX_IncreasableItemOption_ItemOptionDefinitionId")
+  @@index([ItemSetGroupId], map: "IX_IncreasableItemOption_ItemSetGroupId")
+  @@index([OptionTypeId], map: "IX_IncreasableItemOption_OptionTypeId")
+  @@schema("config")
+}
+
+model ItemBasePowerUpDefinition {
+  Id                   String               @id(map: "PK_ItemBasePowerUpDefinition") @db.Uuid
+  TargetAttributeId    String?              @db.Uuid
+  BonusPerLevelTableId String?              @db.Uuid
+  ItemDefinitionId     String?              @db.Uuid
+  BaseValue            Float                @db.Real
+  AttributeDefinition  AttributeDefinition? @relation(fields: [TargetAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemBasePowerUpDefinition_AttributeDefinition_TargetAttribu~")
+  ItemDefinition       ItemDefinition?      @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemBasePowerUpDefinition_ItemDefinition_ItemDefinitionId")
+  ItemLevelBonusTable  ItemLevelBonusTable? @relation(fields: [BonusPerLevelTableId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemBasePowerUpDefinition_ItemLevelBonusTable_BonusPerLevel~")
+
+  @@index([BonusPerLevelTableId], map: "IX_ItemBasePowerUpDefinition_BonusPerLevelTableId")
+  @@index([ItemDefinitionId], map: "IX_ItemBasePowerUpDefinition_ItemDefinitionId")
+  @@index([TargetAttributeId], map: "IX_ItemBasePowerUpDefinition_TargetAttributeId")
+  @@schema("config")
+}
+
+model ItemCrafting {
+  Id                           String                  @id(map: "PK_ItemCrafting") @db.Uuid
+  SimpleCraftingSettingsId     String?                 @unique(map: "IX_ItemCrafting_SimpleCraftingSettingsId") @db.Uuid
+  MonsterDefinitionId          String?                 @db.Uuid
+  Number                       Int                     @db.SmallInt
+  Name                         String
+  ItemCraftingHandlerClassName String
+  MonsterDefinition            MonsterDefinition?      @relation(fields: [MonsterDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCrafting_MonsterDefinition_MonsterDefinitionId")
+  SimpleCraftingSettings       SimpleCraftingSettings? @relation(fields: [SimpleCraftingSettingsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCrafting_SimpleCraftingSettings_SimpleCraftingSettingsId")
+
+  @@index([MonsterDefinitionId], map: "IX_ItemCrafting_MonsterDefinitionId")
+  @@schema("config")
+}
+
+model ItemCraftingRequiredItem {
+  Id                                     String                                   @id(map: "PK_ItemCraftingRequiredItem") @db.Uuid
+  SimpleCraftingSettingsId               String?                                  @db.Uuid
+  MinimumItemLevel                       Int                                      @db.SmallInt
+  MaximumItemLevel                       Int                                      @db.SmallInt
+  MinimumAmount                          Int                                      @db.SmallInt
+  MaximumAmount                          Int                                      @db.SmallInt
+  SuccessResult                          Int
+  FailResult                             Int
+  NpcPriceDivisor                        Int
+  AddPercentage                          Int                                      @db.SmallInt
+  Reference                              Int                                      @db.SmallInt
+  SimpleCraftingSettings                 SimpleCraftingSettings?                  @relation(fields: [SimpleCraftingSettingsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingRequiredItem_SimpleCraftingSettings_SimpleCraft~")
+  ItemCraftingRequiredItemItemDefinition ItemCraftingRequiredItemItemDefinition[]
+  ItemCraftingRequiredItemItemOptionType ItemCraftingRequiredItemItemOptionType[]
+
+  @@index([SimpleCraftingSettingsId], map: "IX_ItemCraftingRequiredItem_SimpleCraftingSettingsId")
+  @@schema("config")
+}
+
+model ItemCraftingRequiredItemItemDefinition {
+  ItemCraftingRequiredItemId String                   @db.Uuid
+  ItemDefinitionId           String                   @db.Uuid
+  ItemCraftingRequiredItem   ItemCraftingRequiredItem @relation(fields: [ItemCraftingRequiredItemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingRequiredItemItemDefinition_ItemCraftingRequired~")
+  ItemDefinition             ItemDefinition           @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingRequiredItemItemDefinition_ItemDefinition_ItemD~")
+
+  @@id([ItemCraftingRequiredItemId, ItemDefinitionId], map: "PK_ItemCraftingRequiredItemItemDefinition")
+  @@index([ItemDefinitionId], map: "IX_ItemCraftingRequiredItemItemDefinition_ItemDefinitionId")
+  @@schema("config")
+}
+
+model ItemCraftingRequiredItemItemOptionType {
+  ItemCraftingRequiredItemId String                   @db.Uuid
+  ItemOptionTypeId           String                   @db.Uuid
+  ItemCraftingRequiredItem   ItemCraftingRequiredItem @relation(fields: [ItemCraftingRequiredItemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingRequiredItemItemOptionType_ItemCraftingRequired~")
+  ItemOptionType             ItemOptionType           @relation(fields: [ItemOptionTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingRequiredItemItemOptionType_ItemOptionType_ItemO~")
+
+  @@id([ItemCraftingRequiredItemId, ItemOptionTypeId], map: "PK_ItemCraftingRequiredItemItemOptionType")
+  @@index([ItemOptionTypeId], map: "IX_ItemCraftingRequiredItemItemOptionType_ItemOptionTypeId")
+  @@schema("config")
+}
+
+model ItemCraftingResultItem {
+  Id                       String                  @id(map: "PK_ItemCraftingResultItem") @db.Uuid
+  ItemDefinitionId         String?                 @db.Uuid
+  SimpleCraftingSettingsId String?                 @db.Uuid
+  RandomMinimumLevel       Int                     @db.SmallInt
+  RandomMaximumLevel       Int                     @db.SmallInt
+  Durability               Int?                    @db.SmallInt
+  Reference                Int                     @db.SmallInt
+  AddLevel                 Int                     @db.SmallInt
+  ItemDefinition           ItemDefinition?         @relation(fields: [ItemDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemCraftingResultItem_ItemDefinition_ItemDefinitionId")
+  SimpleCraftingSettings   SimpleCraftingSettings? @relation(fields: [SimpleCraftingSettingsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemCraftingResultItem_SimpleCraftingSettings_SimpleCraftin~")
+
+  @@index([ItemDefinitionId], map: "IX_ItemCraftingResultItem_ItemDefinitionId")
+  @@index([SimpleCraftingSettingsId], map: "IX_ItemCraftingResultItem_SimpleCraftingSettingsId")
+  @@schema("config")
+}
+
+model ItemDefinition {
+  Id                                              String                                   @id(map: "PK_ItemDefinition") @db.Uuid
+  ItemSlotId                                      String?                                  @db.Uuid
+  ConsumeEffectId                                 String?                                  @db.Uuid
+  SkillId                                         String?                                  @db.Uuid
+  GameConfigurationId                             String?                                  @db.Uuid
+  Number                                          Int                                      @db.SmallInt
+  Width                                           Int                                      @db.SmallInt
+  Height                                          Int                                      @db.SmallInt
+  DropsFromMonsters                               Boolean
+  IsAmmunition                                    Boolean
+  IsBoundToCharacter                              Boolean
+  Name                                            String
+  DropLevel                                       Int                                      @db.SmallInt
+  MaximumItemLevel                                Int                                      @db.SmallInt
+  Durability                                      Int                                      @db.SmallInt
+  Group                                           Int                                      @db.SmallInt
+  Value                                           Int
+  MaximumSockets                                  Int
+  PetExperienceFormula                            String?
+  StorageLimitPerCharacter                        Int                                      @default(0)
+  AttributeRequirement                            AttributeRequirement[]
+  DropItemGroupItemDefinition                     DropItemGroupItemDefinition[]
+  ItemBasePowerUpDefinition                       ItemBasePowerUpDefinition[]
+  ItemCraftingRequiredItemItemDefinition          ItemCraftingRequiredItemItemDefinition[]
+  ItemCraftingResultItem                          ItemCraftingResultItem[]
+  GameConfiguration                               GameConfiguration?                       @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinition_GameConfiguration_GameConfigurationId")
+  ItemSlotType                                    ItemSlotType?                            @relation(fields: [ItemSlotId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemDefinition_ItemSlotType_ItemSlotId")
+  MagicEffectDefinition                           MagicEffectDefinition?                   @relation(fields: [ConsumeEffectId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemDefinition_MagicEffectDefinition_ConsumeEffectId")
+  Skill                                           Skill?                                   @relation(fields: [SkillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemDefinition_Skill_SkillId")
+  ItemDefinitionCharacterClass                    ItemDefinitionCharacterClass[]
+  ItemDefinitionItemOptionDefinition              ItemDefinitionItemOptionDefinition[]
+  ItemDefinitionItemSetGroup                      ItemDefinitionItemSetGroup[]
+  ItemDropItemGroup                               ItemDropItemGroup[]
+  ItemDropItemGroupItemDefinition                 ItemDropItemGroupItemDefinition[]
+  ItemOfItemSet                                   ItemOfItemSet[]
+  JewelMix_JewelMix_MixedJewelIdToItemDefinition  JewelMix[]                               @relation("JewelMix_MixedJewelIdToItemDefinition")
+  JewelMix_JewelMix_SingleJewelIdToItemDefinition JewelMix[]                               @relation("JewelMix_SingleJewelIdToItemDefinition")
+  MiniGameDefinition                              MiniGameDefinition[]
+  QuestItemRequirement                            QuestItemRequirement[]
+  Item                                            Item[]
+  ItemAppearance                                  ItemAppearance[]
+
+  @@index([ConsumeEffectId], map: "IX_ItemDefinition_ConsumeEffectId")
+  @@index([GameConfigurationId], map: "IX_ItemDefinition_GameConfigurationId")
+  @@index([ItemSlotId], map: "IX_ItemDefinition_ItemSlotId")
+  @@index([SkillId], map: "IX_ItemDefinition_SkillId")
+  @@schema("config")
+}
+
+model ItemDefinitionCharacterClass {
+  ItemDefinitionId String         @db.Uuid
+  CharacterClassId String         @db.Uuid
+  CharacterClass   CharacterClass @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionCharacterClass_CharacterClass_CharacterClassId")
+  ItemDefinition   ItemDefinition @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionCharacterClass_ItemDefinition_ItemDefinitionId")
+
+  @@id([ItemDefinitionId, CharacterClassId], map: "PK_ItemDefinitionCharacterClass")
+  @@index([CharacterClassId], map: "IX_ItemDefinitionCharacterClass_CharacterClassId")
+  @@schema("config")
+}
+
+model ItemDefinitionItemOptionDefinition {
+  ItemDefinitionId       String               @db.Uuid
+  ItemOptionDefinitionId String               @db.Uuid
+  ItemDefinition         ItemDefinition       @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionItemOptionDefinition_ItemDefinition_ItemDefin~")
+  ItemOptionDefinition   ItemOptionDefinition @relation(fields: [ItemOptionDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionItemOptionDefinition_ItemOptionDefinition_Ite~")
+
+  @@id([ItemDefinitionId, ItemOptionDefinitionId], map: "PK_ItemDefinitionItemOptionDefinition")
+  @@index([ItemOptionDefinitionId], map: "IX_ItemDefinitionItemOptionDefinition_ItemOptionDefinitionId")
+  @@schema("config")
+}
+
+model ItemDefinitionItemSetGroup {
+  ItemDefinitionId String         @db.Uuid
+  ItemSetGroupId   String         @db.Uuid
+  ItemDefinition   ItemDefinition @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionItemSetGroup_ItemDefinition_ItemDefinitionId")
+  ItemSetGroup     ItemSetGroup   @relation(fields: [ItemSetGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDefinitionItemSetGroup_ItemSetGroup_ItemSetGroupId")
+
+  @@id([ItemDefinitionId, ItemSetGroupId], map: "PK_ItemDefinitionItemSetGroup")
+  @@index([ItemSetGroupId], map: "IX_ItemDefinitionItemSetGroup_ItemSetGroupId")
+  @@schema("config")
+}
+
+model ItemDropItemGroup {
+  Id                              String                            @id(map: "PK_ItemDropItemGroup") @db.Uuid
+  MonsterId                       String?                           @db.Uuid
+  ItemDefinitionId                String?                           @db.Uuid
+  Description                     String
+  Chance                          Float
+  MinimumMonsterLevel             Int?                              @db.SmallInt
+  MaximumMonsterLevel             Int?                              @db.SmallInt
+  ItemLevel                       Int?                              @db.SmallInt
+  ItemType                        Int
+  SourceItemLevel                 Int                               @db.SmallInt
+  MoneyAmount                     Int
+  MinimumLevel                    Int                               @db.SmallInt
+  MaximumLevel                    Int                               @db.SmallInt
+  RequiredCharacterLevel          Int                               @db.SmallInt
+  DropEffect                      Int
+  ItemDefinition                  ItemDefinition?                   @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDropItemGroup_ItemDefinition_ItemDefinitionId")
+  MonsterDefinition               MonsterDefinition?                @relation(fields: [MonsterId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemDropItemGroup_MonsterDefinition_MonsterId")
+  ItemDropItemGroupItemDefinition ItemDropItemGroupItemDefinition[]
+
+  @@index([ItemDefinitionId], map: "IX_ItemDropItemGroup_ItemDefinitionId")
+  @@index([MonsterId], map: "IX_ItemDropItemGroup_MonsterId")
+  @@schema("config")
+}
+
+model ItemDropItemGroupItemDefinition {
+  ItemDropItemGroupId String            @db.Uuid
+  ItemDefinitionId    String            @db.Uuid
+  ItemDefinition      ItemDefinition    @relation(fields: [ItemDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDropItemGroupItemDefinition_ItemDefinition_ItemDefiniti~")
+  ItemDropItemGroup   ItemDropItemGroup @relation(fields: [ItemDropItemGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemDropItemGroupItemDefinition_ItemDropItemGroup_ItemDropI~")
+
+  @@id([ItemDropItemGroupId, ItemDefinitionId], map: "PK_ItemDropItemGroupItemDefinition")
+  @@index([ItemDefinitionId], map: "IX_ItemDropItemGroupItemDefinition_ItemDefinitionId")
+  @@schema("config")
+}
+
+model ItemLevelBonusTable {
+  Id                        String                      @id(map: "PK_ItemLevelBonusTable") @db.Uuid
+  GameConfigurationId       String?                     @db.Uuid
+  Name                      String
+  Description               String
+  ItemBasePowerUpDefinition ItemBasePowerUpDefinition[]
+  GameConfiguration         GameConfiguration?          @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemLevelBonusTable_GameConfiguration_GameConfigurationId")
+  LevelBonus                LevelBonus[]
+
+  @@index([GameConfigurationId], map: "IX_ItemLevelBonusTable_GameConfigurationId")
+  @@schema("config")
+}
+
+model ItemOfItemSet {
+  Id                      String                 @id(map: "PK_ItemOfItemSet") @db.Uuid
+  ItemSetGroupId          String?                @db.Uuid
+  ItemDefinitionId        String?                @db.Uuid
+  BonusOptionId           String?                @db.Uuid
+  AncientSetDiscriminator Int
+  IncreasableItemOption   IncreasableItemOption? @relation(fields: [BonusOptionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemOfItemSet_IncreasableItemOption_BonusOptionId")
+  ItemDefinition          ItemDefinition?        @relation(fields: [ItemDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemOfItemSet_ItemDefinition_ItemDefinitionId")
+  ItemSetGroup            ItemSetGroup?          @relation(fields: [ItemSetGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOfItemSet_ItemSetGroup_ItemSetGroupId")
+  ItemItemOfItemSet       ItemItemOfItemSet[]
+
+  @@index([BonusOptionId], map: "IX_ItemOfItemSet_BonusOptionId")
+  @@index([ItemDefinitionId], map: "IX_ItemOfItemSet_ItemDefinitionId")
+  @@index([ItemSetGroupId], map: "IX_ItemOfItemSet_ItemSetGroupId")
+  @@schema("config")
+}
+
+model ItemOption {
+  Id                  String             @id(map: "PK_ItemOption") @db.Uuid
+  OptionTypeId        String?            @db.Uuid
+  PowerUpDefinitionId String?            @unique(map: "IX_ItemOption_PowerUpDefinitionId") @db.Uuid
+  Number              Int
+  SubOptionType       Int
+  ItemOptionType      ItemOptionType?    @relation(fields: [OptionTypeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemOption_ItemOptionType_OptionTypeId")
+  PowerUpDefinition   PowerUpDefinition? @relation(fields: [PowerUpDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOption_PowerUpDefinition_PowerUpDefinitionId")
+
+  @@index([OptionTypeId], map: "IX_ItemOption_OptionTypeId")
+  @@schema("config")
+}
+
+model ItemOptionCombinationBonus {
+  Id                          String                        @id(map: "PK_ItemOptionCombinationBonus") @db.Uuid
+  BonusId                     String?                       @unique(map: "IX_ItemOptionCombinationBonus_BonusId") @db.Uuid
+  GameConfigurationId         String?                       @db.Uuid
+  Description                 String
+  Number                      Int
+  AppliesMultipleTimes        Boolean
+  CombinationBonusRequirement CombinationBonusRequirement[]
+  GameConfiguration           GameConfiguration?            @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionCombinationBonus_GameConfiguration_GameConfigurat~")
+  PowerUpDefinition           PowerUpDefinition?            @relation(fields: [BonusId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionCombinationBonus_PowerUpDefinition_BonusId")
+
+  @@index([GameConfigurationId], map: "IX_ItemOptionCombinationBonus_GameConfigurationId")
+  @@schema("config")
+}
+
+model ItemOptionDefinition {
+  Id                                 String                               @id(map: "PK_ItemOptionDefinition") @db.Uuid
+  GameConfigurationId                String?                              @db.Uuid
+  Name                               String
+  AddsRandomly                       Boolean
+  AddChance                          Float                                @db.Real
+  MaximumOptionsPerItem              Int
+  IncreasableItemOption              IncreasableItemOption[]
+  ItemDefinitionItemOptionDefinition ItemDefinitionItemOptionDefinition[]
+  GameConfiguration                  GameConfiguration?                   @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionDefinition_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_ItemOptionDefinition_GameConfigurationId")
+  @@schema("config")
+}
+
+model ItemOptionOfLevel {
+  Id                      String                 @id(map: "PK_ItemOptionOfLevel") @db.Uuid
+  PowerUpDefinitionId     String?                @unique(map: "IX_ItemOptionOfLevel_PowerUpDefinitionId") @db.Uuid
+  IncreasableItemOptionId String?                @db.Uuid
+  Level                   Int
+  RequiredItemLevel       Int
+  IncreasableItemOption   IncreasableItemOption? @relation(fields: [IncreasableItemOptionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionOfLevel_IncreasableItemOption_IncreasableItemOpti~")
+  PowerUpDefinition       PowerUpDefinition?     @relation(fields: [PowerUpDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionOfLevel_PowerUpDefinition_PowerUpDefinitionId")
+
+  @@index([IncreasableItemOptionId], map: "IX_ItemOptionOfLevel_IncreasableItemOptionId")
+  @@schema("config")
+}
+
+model ItemOptionType {
+  Id                                     String                                   @id(map: "PK_ItemOptionType") @db.Uuid
+  GameConfigurationId                    String?                                  @db.Uuid
+  Name                                   String
+  Description                            String
+  IsVisible                              Boolean
+  CombinationBonusRequirement            CombinationBonusRequirement[]
+  IncreasableItemOption                  IncreasableItemOption[]
+  ItemCraftingRequiredItemItemOptionType ItemCraftingRequiredItemItemOptionType[]
+  ItemOption                             ItemOption[]
+  GameConfiguration                      GameConfiguration?                       @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionType_GameConfiguration_GameConfigurationId")
+  ItemAppearanceItemOptionType           ItemAppearanceItemOptionType[]
+
+  @@index([GameConfigurationId], map: "IX_ItemOptionType_GameConfigurationId")
+  @@schema("config")
+}
+
+model ItemSetGroup {
+  Id                         String                       @id(map: "PK_ItemSetGroup") @db.Uuid
+  GameConfigurationId        String?                      @db.Uuid
+  Name                       String
+  AlwaysApplies              Boolean
+  CountDistinct              Boolean
+  MinimumItemCount           Int
+  SetLevel                   Int
+  IncreasableItemOption      IncreasableItemOption[]
+  ItemDefinitionItemSetGroup ItemDefinitionItemSetGroup[]
+  ItemOfItemSet              ItemOfItemSet[]
+  GameConfiguration          GameConfiguration?           @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemSetGroup_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_ItemSetGroup_GameConfigurationId")
+  @@schema("config")
+}
+
+model ItemSlotType {
+  Id                  String             @id(map: "PK_ItemSlotType") @db.Uuid
+  ItemSlots           String?
+  GameConfigurationId String?            @db.Uuid
+  Description         String
+  ItemDefinition      ItemDefinition[]
+  GameConfiguration   GameConfiguration? @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemSlotType_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_ItemSlotType_GameConfigurationId")
+  @@schema("config")
+}
+
+model JewelMix {
+  Id                                                    String             @id(map: "PK_JewelMix") @db.Uuid
+  SingleJewelId                                         String?            @db.Uuid
+  MixedJewelId                                          String?            @db.Uuid
+  GameConfigurationId                                   String?            @db.Uuid
+  Number                                                Int                @db.SmallInt
+  GameConfiguration                                     GameConfiguration? @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_JewelMix_GameConfiguration_GameConfigurationId")
+  ItemDefinition_JewelMix_MixedJewelIdToItemDefinition  ItemDefinition?    @relation("JewelMix_MixedJewelIdToItemDefinition", fields: [MixedJewelId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_JewelMix_ItemDefinition_MixedJewelId")
+  ItemDefinition_JewelMix_SingleJewelIdToItemDefinition ItemDefinition?    @relation("JewelMix_SingleJewelIdToItemDefinition", fields: [SingleJewelId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_JewelMix_ItemDefinition_SingleJewelId")
+
+  @@index([GameConfigurationId], map: "IX_JewelMix_GameConfigurationId")
+  @@index([MixedJewelId], map: "IX_JewelMix_MixedJewelId")
+  @@index([SingleJewelId], map: "IX_JewelMix_SingleJewelId")
+  @@schema("config")
+}
+
+model LevelBonus {
+  Id                    String               @id(map: "PK_LevelBonus") @db.Uuid
+  ItemLevelBonusTableId String?              @db.Uuid
+  Level                 Int
+  AdditionalValue       Float                @db.Real
+  ItemLevelBonusTable   ItemLevelBonusTable? @relation(fields: [ItemLevelBonusTableId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_LevelBonus_ItemLevelBonusTable_ItemLevelBonusTableId")
+
+  @@index([ItemLevelBonusTableId], map: "IX_LevelBonus_ItemLevelBonusTableId")
+  @@schema("config")
+}
+
+model MagicEffectDefinition {
+  Id                     String                  @id(map: "PK_MagicEffectDefinition") @db.Uuid
+  DurationId             String?                 @unique(map: "IX_MagicEffectDefinition_DurationId") @db.Uuid
+  GameConfigurationId    String?                 @db.Uuid
+  Number                 Int                     @db.SmallInt
+  Name                   String
+  SubType                Int                     @db.SmallInt
+  InformObservers        Boolean
+  StopByDeath            Boolean
+  SendDuration           Boolean
+  ItemDefinition         ItemDefinition[]
+  GameConfiguration      GameConfiguration?      @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MagicEffectDefinition_GameConfiguration_GameConfigurationId")
+  PowerUpDefinitionValue PowerUpDefinitionValue? @relation(fields: [DurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MagicEffectDefinition_PowerUpDefinitionValue_DurationId")
+  PowerUpDefinition      PowerUpDefinition[]
+  Skill                  Skill[]
+
+  @@index([GameConfigurationId], map: "IX_MagicEffectDefinition_GameConfigurationId")
+  @@schema("config")
+}
+
+model MasterSkillDefinition {
+  Id                                                    String                       @id(map: "PK_MasterSkillDefinition") @db.Uuid
+  RootId                                                String?                      @db.Uuid
+  TargetAttributeId                                     String?                      @db.Uuid
+  ReplacedSkillId                                       String?                      @db.Uuid
+  Rank                                                  Int                          @db.SmallInt
+  MaximumLevel                                          Int                          @db.SmallInt
+  MinimumLevel                                          Int                          @db.SmallInt
+  ValueFormula                                          String
+  DisplayValueFormula                                   String
+  Aggregation                                           Int
+  AttributeDefinition                                   AttributeDefinition?         @relation(fields: [TargetAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MasterSkillDefinition_AttributeDefinition_TargetAttributeId")
+  MasterSkillRoot                                       MasterSkillRoot?             @relation(fields: [RootId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MasterSkillDefinition_MasterSkillRoot_RootId")
+  Skill_MasterSkillDefinition_ReplacedSkillIdToSkill    Skill?                       @relation("MasterSkillDefinition_ReplacedSkillIdToSkill", fields: [ReplacedSkillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MasterSkillDefinition_Skill_ReplacedSkillId")
+  MasterSkillDefinitionSkill                            MasterSkillDefinitionSkill[]
+  Skill_Skill_MasterDefinitionIdToMasterSkillDefinition Skill?                       @relation("Skill_MasterDefinitionIdToMasterSkillDefinition")
+
+  @@index([ReplacedSkillId], map: "IX_MasterSkillDefinition_ReplacedSkillId")
+  @@index([RootId], map: "IX_MasterSkillDefinition_RootId")
+  @@index([TargetAttributeId], map: "IX_MasterSkillDefinition_TargetAttributeId")
+  @@schema("config")
+}
+
+model MasterSkillDefinitionSkill {
+  MasterSkillDefinitionId String                @db.Uuid
+  SkillId                 String                @db.Uuid
+  MasterSkillDefinition   MasterSkillDefinition @relation(fields: [MasterSkillDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MasterSkillDefinitionSkill_MasterSkillDefinition_MasterSkil~")
+  Skill                   Skill                 @relation(fields: [SkillId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MasterSkillDefinitionSkill_Skill_SkillId")
+
+  @@id([MasterSkillDefinitionId, SkillId], map: "PK_MasterSkillDefinitionSkill")
+  @@index([SkillId], map: "IX_MasterSkillDefinitionSkill_SkillId")
+  @@schema("config")
+}
+
+model MasterSkillRoot {
+  Id                    String                  @id(map: "PK_MasterSkillRoot") @db.Uuid
+  GameConfigurationId   String?                 @db.Uuid
+  Name                  String
+  MasterSkillDefinition MasterSkillDefinition[]
+  GameConfiguration     GameConfiguration?      @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MasterSkillRoot_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_MasterSkillRoot_GameConfigurationId")
+  @@schema("config")
+}
+
+model MiniGameChangeEvent {
+  Id                     String                  @id(map: "PK_MiniGameChangeEvent") @db.Uuid
+  TargetDefinitionId     String?                 @db.Uuid
+  SpawnAreaId            String?                 @unique(map: "IX_MiniGameChangeEvent_SpawnAreaId") @db.Uuid
+  MiniGameDefinitionId   String?                 @db.Uuid
+  Index                  Int
+  Description            String?
+  Message                String?
+  Target                 Int
+  MinimumTargetLevel     Int?                    @db.SmallInt
+  NumberOfKills          Int                     @db.SmallInt
+  MultiplyKillsByPlayers Boolean
+  MiniGameDefinition     MiniGameDefinition?     @relation(fields: [MiniGameDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameChangeEvent_MiniGameDefinition_MiniGameDefinitionId")
+  MonsterDefinition      MonsterDefinition?      @relation(fields: [TargetDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameChangeEvent_MonsterDefinition_TargetDefinitionId")
+  MonsterSpawnArea       MonsterSpawnArea?       @relation(fields: [SpawnAreaId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameChangeEvent_MonsterSpawnArea_SpawnAreaId")
+  MiniGameTerrainChange  MiniGameTerrainChange[]
+
+  @@index([MiniGameDefinitionId], map: "IX_MiniGameChangeEvent_MiniGameDefinitionId")
+  @@index([TargetDefinitionId], map: "IX_MiniGameChangeEvent_TargetDefinitionId")
+  @@schema("config")
+}
+
+model MiniGameDefinition {
+  Id                             String                  @id(map: "PK_MiniGameDefinition") @db.Uuid
+  EntranceId                     String?                 @db.Uuid
+  TicketItemId                   String?                 @db.Uuid
+  GameConfigurationId            String?                 @db.Uuid
+  Type                           Int
+  Name                           String
+  Description                    String
+  GameLevel                      Int                     @db.SmallInt
+  MapCreationPolicy              Int
+  EnterDuration                  Unsupported("interval")
+  GameDuration                   Unsupported("interval")
+  ExitDuration                   Unsupported("interval")
+  MaximumPlayerCount             Int
+  SaveRankingStatistics          Boolean
+  RequiresMasterClass            Boolean
+  MinimumCharacterLevel          Int
+  MaximumCharacterLevel          Int
+  MinimumSpecialCharacterLevel   Int
+  MaximumSpecialCharacterLevel   Int
+  TicketItemLevel                Int
+  AllowParty                     Boolean                 @default(false)
+  ArePlayerKillersAllowedToEnter Boolean                 @default(false)
+  EntranceFee                    Int                     @default(0)
+  MiniGameChangeEvent            MiniGameChangeEvent[]
+  ExitGate                       ExitGate?               @relation(fields: [EntranceId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameDefinition_ExitGate_EntranceId")
+  GameConfiguration              GameConfiguration?      @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameDefinition_GameConfiguration_GameConfigurationId")
+  ItemDefinition                 ItemDefinition?         @relation(fields: [TicketItemId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameDefinition_ItemDefinition_TicketItemId")
+  MiniGameReward                 MiniGameReward[]
+  MiniGameSpawnWave              MiniGameSpawnWave[]
+  MiniGameRankingEntry           MiniGameRankingEntry[]
+
+  @@index([EntranceId], map: "IX_MiniGameDefinition_EntranceId")
+  @@index([GameConfigurationId], map: "IX_MiniGameDefinition_GameConfigurationId")
+  @@index([TicketItemId], map: "IX_MiniGameDefinition_TicketItemId")
+  @@schema("config")
+}
+
+model MiniGameReward {
+  Id                   String              @id(map: "PK_MiniGameReward") @db.Uuid
+  ItemRewardId         String?             @db.Uuid
+  RequiredKillId       String?             @db.Uuid
+  MiniGameDefinitionId String?             @db.Uuid
+  Rank                 Int?
+  RewardType           Int
+  RewardAmount         Int
+  RequiredSuccess      Int
+  DropItemGroup        DropItemGroup?      @relation(fields: [ItemRewardId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameReward_DropItemGroup_ItemRewardId")
+  MiniGameDefinition   MiniGameDefinition? @relation(fields: [MiniGameDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameReward_MiniGameDefinition_MiniGameDefinitionId")
+  MonsterDefinition    MonsterDefinition?  @relation(fields: [RequiredKillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameReward_MonsterDefinition_RequiredKillId")
+
+  @@index([ItemRewardId], map: "IX_MiniGameReward_ItemRewardId")
+  @@index([MiniGameDefinitionId], map: "IX_MiniGameReward_MiniGameDefinitionId")
+  @@index([RequiredKillId], map: "IX_MiniGameReward_RequiredKillId")
+  @@schema("config")
+}
+
+model MiniGameSpawnWave {
+  Id                   String                  @id(map: "PK_MiniGameSpawnWave") @db.Uuid
+  MiniGameDefinitionId String?                 @db.Uuid
+  WaveNumber           Int                     @db.SmallInt
+  Description          String?
+  Message              String?
+  StartTime            Unsupported("interval")
+  EndTime              Unsupported("interval")
+  MiniGameDefinition   MiniGameDefinition?     @relation(fields: [MiniGameDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameSpawnWave_MiniGameDefinition_MiniGameDefinitionId")
+
+  @@index([MiniGameDefinitionId], map: "IX_MiniGameSpawnWave_MiniGameDefinitionId")
+  @@schema("config")
+}
+
+model MiniGameTerrainChange {
+  Id                     String               @id(map: "PK_MiniGameTerrainChange") @db.Uuid
+  MiniGameChangeEventId  String?              @db.Uuid
+  TerrainAttribute       Int
+  SetTerrainAttribute    Boolean
+  StartX                 Int                  @db.SmallInt
+  StartY                 Int                  @db.SmallInt
+  EndX                   Int                  @db.SmallInt
+  EndY                   Int                  @db.SmallInt
+  IsClientUpdateRequired Boolean              @default(false)
+  MiniGameChangeEvent    MiniGameChangeEvent? @relation(fields: [MiniGameChangeEventId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MiniGameTerrainChange_MiniGameChangeEvent_MiniGameChangeEve~")
+
+  @@index([MiniGameChangeEventId], map: "IX_MiniGameTerrainChange_MiniGameChangeEventId")
+  @@schema("config")
+}
+
+model MonsterAttribute {
+  Id                    String               @id(map: "PK_MonsterAttribute") @db.Uuid
+  AttributeDefinitionId String?              @db.Uuid
+  MonsterDefinitionId   String?              @db.Uuid
+  Value                 Float                @db.Real
+  AttributeDefinition   AttributeDefinition? @relation(fields: [AttributeDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonsterAttribute_AttributeDefinition_AttributeDefinitionId")
+  MonsterDefinition     MonsterDefinition?   @relation(fields: [MonsterDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterAttribute_MonsterDefinition_MonsterDefinitionId")
+
+  @@index([AttributeDefinitionId], map: "IX_MonsterAttribute_AttributeDefinitionId")
+  @@index([MonsterDefinitionId], map: "IX_MonsterAttribute_MonsterDefinitionId")
+  @@schema("config")
+}
+
+model MonsterDefinition {
+  Id                                                                     String                           @id(map: "PK_MonsterDefinition") @db.Uuid
+  AttackSkillId                                                          String?                          @db.Uuid
+  MerchantStoreId                                                        String?                          @unique(map: "IX_MonsterDefinition_MerchantStoreId") @db.Uuid
+  GameConfigurationId                                                    String?                          @db.Uuid
+  Number                                                                 Int                              @db.SmallInt
+  Designation                                                            String
+  MoveRange                                                              Int                              @db.SmallInt
+  AttackRange                                                            Int                              @db.SmallInt
+  ViewRange                                                              Int                              @db.SmallInt
+  MoveDelay                                                              Unsupported("interval")
+  AttackDelay                                                            Unsupported("interval")
+  RespawnDelay                                                           Unsupported("interval")
+  Attribute                                                              Int                              @db.SmallInt
+  NumberOfMaximumItemDrops                                               Int
+  NpcWindow                                                              Int
+  ObjectKind                                                             Int
+  IntelligenceTypeName                                                   String?
+  DropItemGroup                                                          DropItemGroup[]
+  ItemCrafting                                                           ItemCrafting[]
+  ItemDropItemGroup                                                      ItemDropItemGroup[]
+  MiniGameChangeEvent                                                    MiniGameChangeEvent[]
+  MiniGameReward                                                         MiniGameReward[]
+  MonsterAttribute                                                       MonsterAttribute[]
+  GameConfiguration                                                      GameConfiguration?               @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterDefinition_GameConfiguration_GameConfigurationId")
+  ItemStorage                                                            ItemStorage?                     @relation(fields: [MerchantStoreId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterDefinition_ItemStorage_MerchantStoreId")
+  Skill                                                                  Skill?                           @relation(fields: [AttackSkillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonsterDefinition_Skill_AttackSkillId")
+  MonsterDefinitionDropItemGroup                                         MonsterDefinitionDropItemGroup[]
+  MonsterSpawnArea                                                       MonsterSpawnArea[]
+  QuestDefinition_QuestDefinition_MonsterDefinitionIdToMonsterDefinition QuestDefinition[]                @relation("QuestDefinition_MonsterDefinitionIdToMonsterDefinition")
+  QuestDefinition_QuestDefinition_QuestGiverIdToMonsterDefinition        QuestDefinition[]                @relation("QuestDefinition_QuestGiverIdToMonsterDefinition")
+  QuestMonsterKillRequirement                                            QuestMonsterKillRequirement[]
+
+  @@index([AttackSkillId], map: "IX_MonsterDefinition_AttackSkillId")
+  @@index([GameConfigurationId], map: "IX_MonsterDefinition_GameConfigurationId")
+  @@schema("config")
+}
+
+model MonsterDefinitionDropItemGroup {
+  MonsterDefinitionId String            @db.Uuid
+  DropItemGroupId     String            @db.Uuid
+  DropItemGroup       DropItemGroup     @relation(fields: [DropItemGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterDefinitionDropItemGroup_DropItemGroup_DropItemGroupId")
+  MonsterDefinition   MonsterDefinition @relation(fields: [MonsterDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterDefinitionDropItemGroup_MonsterDefinition_MonsterDef~")
+
+  @@id([MonsterDefinitionId, DropItemGroupId], map: "PK_MonsterDefinitionDropItemGroup")
+  @@index([DropItemGroupId], map: "IX_MonsterDefinitionDropItemGroup_DropItemGroupId")
+  @@schema("config")
+}
+
+model MonsterSpawnArea {
+  Id                                                                        String               @id(map: "PK_MonsterSpawnArea") @db.Uuid
+  MonsterDefinitionId                                                       String?              @db.Uuid
+  GameMapId                                                                 String?              @db.Uuid
+  X1                                                                        Int                  @db.SmallInt
+  Y1                                                                        Int                  @db.SmallInt
+  X2                                                                        Int                  @db.SmallInt
+  Y2                                                                        Int                  @db.SmallInt
+  Direction                                                                 Int
+  Quantity                                                                  Int                  @db.SmallInt
+  SpawnTrigger                                                              Int
+  WaveNumber                                                                Int                  @db.SmallInt
+  MaximumHealthOverride                                                     Int?
+  GameMapDefinitionId                                                       String?              @db.Uuid
+  MiniGameChangeEvent                                                       MiniGameChangeEvent?
+  GameMapDefinition_MonsterSpawnArea_GameMapDefinitionIdToGameMapDefinition GameMapDefinition?   @relation("MonsterSpawnArea_GameMapDefinitionIdToGameMapDefinition", fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MonsterSpawnArea_GameMapDefinition_GameMapDefinitionId")
+  GameMapDefinition_MonsterSpawnArea_GameMapIdToGameMapDefinition           GameMapDefinition?   @relation("MonsterSpawnArea_GameMapIdToGameMapDefinition", fields: [GameMapId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonsterSpawnArea_GameMapDefinition_GameMapId")
+  MonsterDefinition                                                         MonsterDefinition?   @relation(fields: [MonsterDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonsterSpawnArea_MonsterDefinition_MonsterDefinitionId")
+
+  @@index([GameMapDefinitionId], map: "IX_MonsterSpawnArea_GameMapDefinitionId")
+  @@index([GameMapId], map: "IX_MonsterSpawnArea_GameMapId")
+  @@index([MonsterDefinitionId], map: "IX_MonsterSpawnArea_MonsterDefinitionId")
+  @@schema("config")
+}
+
+model PlugInConfiguration {
+  Id                   String             @id(map: "PK_PlugInConfiguration") @db.Uuid
+  GameConfigurationId  String?            @db.Uuid
+  TypeId               String             @db.Uuid
+  IsActive             Boolean
+  CustomPlugInSource   String?
+  ExternalAssemblyName String?
+  CustomConfiguration  String?
+  GameConfiguration    GameConfiguration? @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PlugInConfiguration_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_PlugInConfiguration_GameConfigurationId")
+  @@schema("config")
+}
+
+model PowerUpDefinition {
+  Id                         String                      @id(map: "PK_PowerUpDefinition") @db.Uuid
+  TargetAttributeId          String?                     @db.Uuid
+  BoostId                    String?                     @unique(map: "IX_PowerUpDefinition_BoostId") @db.Uuid
+  MagicEffectDefinitionId    String?                     @db.Uuid
+  GameMapDefinitionId        String?                     @db.Uuid
+  IncreasableItemOption      IncreasableItemOption?
+  ItemOption                 ItemOption?
+  ItemOptionCombinationBonus ItemOptionCombinationBonus?
+  ItemOptionOfLevel          ItemOptionOfLevel?
+  AttributeDefinition        AttributeDefinition?        @relation(fields: [TargetAttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_PowerUpDefinition_AttributeDefinition_TargetAttributeId")
+  GameMapDefinition          GameMapDefinition?          @relation(fields: [GameMapDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PowerUpDefinition_GameMapDefinition_GameMapDefinitionId")
+  MagicEffectDefinition      MagicEffectDefinition?      @relation(fields: [MagicEffectDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefiniti~")
+  PowerUpDefinitionValue     PowerUpDefinitionValue?     @relation(fields: [BoostId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_PowerUpDefinition_PowerUpDefinitionValue_BoostId")
+
+  @@index([GameMapDefinitionId], map: "IX_PowerUpDefinition_GameMapDefinitionId")
+  @@index([MagicEffectDefinitionId], map: "IX_PowerUpDefinition_MagicEffectDefinitionId")
+  @@index([TargetAttributeId], map: "IX_PowerUpDefinition_TargetAttributeId")
+  @@schema("config")
+}
+
+model PowerUpDefinitionValue {
+  Id                    String                  @id(map: "PK_PowerUpDefinitionValue") @db.Uuid
+  Value                 Float                   @db.Real
+  AggregateType         Int
+  AttributeRelationship AttributeRelationship[]
+  MagicEffectDefinition MagicEffectDefinition?
+  PowerUpDefinition     PowerUpDefinition?
+
+  @@schema("config")
+}
+
+model QuestDefinition {
+  Id                                                                           String                        @id(map: "PK_QuestDefinition") @db.Uuid
+  QuestGiverId                                                                 String?                       @db.Uuid
+  QualifiedCharacterId                                                         String?                       @db.Uuid
+  MonsterDefinitionId                                                          String?                       @db.Uuid
+  Name                                                                         String
+  Group                                                                        Int                           @db.SmallInt
+  Number                                                                       Int                           @db.SmallInt
+  StartingNumber                                                               Int                           @db.SmallInt
+  RefuseNumber                                                                 Int                           @db.SmallInt
+  Repeatable                                                                   Boolean
+  RequiresClientAction                                                         Boolean
+  RequiredStartMoney                                                           Int
+  MinimumCharacterLevel                                                        Int
+  MaximumCharacterLevel                                                        Int
+  CharacterClass                                                               CharacterClass?               @relation(fields: [QualifiedCharacterId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestDefinition_CharacterClass_QualifiedCharacterId")
+  MonsterDefinition_QuestDefinition_MonsterDefinitionIdToMonsterDefinition     MonsterDefinition?            @relation("QuestDefinition_MonsterDefinitionIdToMonsterDefinition", fields: [MonsterDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestDefinition_MonsterDefinition_MonsterDefinitionId")
+  MonsterDefinition_QuestDefinition_QuestGiverIdToMonsterDefinition            MonsterDefinition?            @relation("QuestDefinition_QuestGiverIdToMonsterDefinition", fields: [QuestGiverId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestDefinition_MonsterDefinition_QuestGiverId")
+  QuestItemRequirement                                                         QuestItemRequirement[]
+  QuestMonsterKillRequirement                                                  QuestMonsterKillRequirement[]
+  QuestReward                                                                  QuestReward[]
+  CharacterQuestState_CharacterQuestState_ActiveQuestIdToQuestDefinition       CharacterQuestState[]         @relation("CharacterQuestState_ActiveQuestIdToQuestDefinition")
+  CharacterQuestState_CharacterQuestState_LastFinishedQuestIdToQuestDefinition CharacterQuestState[]         @relation("CharacterQuestState_LastFinishedQuestIdToQuestDefinition")
+
+  @@index([MonsterDefinitionId], map: "IX_QuestDefinition_MonsterDefinitionId")
+  @@index([QualifiedCharacterId], map: "IX_QuestDefinition_QualifiedCharacterId")
+  @@index([QuestGiverId], map: "IX_QuestDefinition_QuestGiverId")
+  @@schema("config")
+}
+
+model QuestItemRequirement {
+  Id                String           @id(map: "PK_QuestItemRequirement") @db.Uuid
+  ItemId            String?          @db.Uuid
+  DropItemGroupId   String?          @db.Uuid
+  QuestDefinitionId String?          @db.Uuid
+  MinimumNumber     Int
+  DropItemGroup     DropItemGroup?   @relation(fields: [DropItemGroupId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestItemRequirement_DropItemGroup_DropItemGroupId")
+  ItemDefinition    ItemDefinition?  @relation(fields: [ItemId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestItemRequirement_ItemDefinition_ItemId")
+  QuestDefinition   QuestDefinition? @relation(fields: [QuestDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestItemRequirement_QuestDefinition_QuestDefinitionId")
+
+  @@index([DropItemGroupId], map: "IX_QuestItemRequirement_DropItemGroupId")
+  @@index([ItemId], map: "IX_QuestItemRequirement_ItemId")
+  @@index([QuestDefinitionId], map: "IX_QuestItemRequirement_QuestDefinitionId")
+  @@schema("config")
+}
+
+model QuestMonsterKillRequirement {
+  Id                               String                             @id(map: "PK_QuestMonsterKillRequirement") @db.Uuid
+  MonsterId                        String?                            @db.Uuid
+  QuestDefinitionId                String?                            @db.Uuid
+  MinimumNumber                    Int
+  MonsterDefinition                MonsterDefinition?                 @relation(fields: [MonsterId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestMonsterKillRequirement_MonsterDefinition_MonsterId")
+  QuestDefinition                  QuestDefinition?                   @relation(fields: [QuestDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestMonsterKillRequirement_QuestDefinition_QuestDefinition~")
+  QuestMonsterKillRequirementState QuestMonsterKillRequirementState[]
+
+  @@index([MonsterId], map: "IX_QuestMonsterKillRequirement_MonsterId")
+  @@index([QuestDefinitionId], map: "IX_QuestMonsterKillRequirement_QuestDefinitionId")
+  @@schema("config")
+}
+
+model QuestReward {
+  Id                  String               @id(map: "PK_QuestReward") @db.Uuid
+  ItemRewardId        String?              @unique(map: "IX_QuestReward_ItemRewardId") @db.Uuid
+  AttributeRewardId   String?              @db.Uuid
+  SkillRewardId       String?              @db.Uuid
+  QuestDefinitionId   String?              @db.Uuid
+  RewardType          Int
+  Value               Int
+  AttributeDefinition AttributeDefinition? @relation(fields: [AttributeRewardId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestReward_AttributeDefinition_AttributeRewardId")
+  Item                Item?                @relation(fields: [ItemRewardId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestReward_Item_ItemRewardId")
+  QuestDefinition     QuestDefinition?     @relation(fields: [QuestDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestReward_QuestDefinition_QuestDefinitionId")
+  Skill               Skill?               @relation(fields: [SkillRewardId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestReward_Skill_SkillRewardId")
+
+  @@index([AttributeRewardId], map: "IX_QuestReward_AttributeRewardId")
+  @@index([QuestDefinitionId], map: "IX_QuestReward_QuestDefinitionId")
+  @@index([SkillRewardId], map: "IX_QuestReward_SkillRewardId")
+  @@schema("config")
+}
+
+model Rectangle {
+  Id                                                               String                @id(map: "PK_Rectangle") @db.Uuid
+  X1                                                               Int                   @db.SmallInt
+  Y1                                                               Int                   @db.SmallInt
+  X2                                                               Int                   @db.SmallInt
+  Y2                                                               Int                   @db.SmallInt
+  BattleZoneDefinition_BattleZoneDefinition_GroundIdToRectangle    BattleZoneDefinition? @relation("BattleZoneDefinition_GroundIdToRectangle")
+  BattleZoneDefinition_BattleZoneDefinition_LeftGoalIdToRectangle  BattleZoneDefinition? @relation("BattleZoneDefinition_LeftGoalIdToRectangle")
+  BattleZoneDefinition_BattleZoneDefinition_RightGoalIdToRectangle BattleZoneDefinition? @relation("BattleZoneDefinition_RightGoalIdToRectangle")
+
+  @@schema("config")
+}
+
+model SimpleCraftingSettings {
+  Id                                        String                     @id(map: "PK_SimpleCraftingSettings") @db.Uuid
+  Money                                     Int
+  MoneyPerFinalSuccessPercentage            Int
+  SuccessPercent                            Int                        @db.SmallInt
+  MaximumSuccessPercent                     Int                        @db.SmallInt
+  MultipleAllowed                           Boolean
+  ResultItemSelect                          Int
+  SuccessPercentageAdditionForLuck          Int
+  SuccessPercentageAdditionForExcellentItem Int
+  SuccessPercentageAdditionForAncientItem   Int
+  SuccessPercentageAdditionForSocketItem    Int
+  ResultItemLuckOptionChance                Int                        @db.SmallInt
+  ResultItemSkillChance                     Int                        @db.SmallInt
+  ResultItemExcellentOptionChance           Int                        @db.SmallInt
+  ResultItemMaxExcOptionCount               Int                        @db.SmallInt
+  ItemCrafting                              ItemCrafting?
+  ItemCraftingRequiredItem                  ItemCraftingRequiredItem[]
+  ItemCraftingResultItem                    ItemCraftingResultItem[]
+
+  @@schema("config")
+}
+
+model Skill {
+  Id                                                                    String                       @id(map: "PK_Skill") @db.Uuid
+  ElementalModifierTargetId                                             String?                      @db.Uuid
+  MagicEffectDefId                                                      String?                      @db.Uuid
+  MasterDefinitionId                                                    String?                      @unique(map: "IX_Skill_MasterDefinitionId") @db.Uuid
+  GameConfigurationId                                                   String?                      @db.Uuid
+  Number                                                                Int                          @db.SmallInt
+  Name                                                                  String
+  Range                                                                 Int                          @db.SmallInt
+  DamageType                                                            Int
+  SkillType                                                             Int
+  Target                                                                Int
+  ImplicitTargetRange                                                   Int                          @db.SmallInt
+  TargetRestriction                                                     Int
+  MovesToTarget                                                         Boolean
+  MovesTarget                                                           Boolean
+  AttackDamage                                                          Int
+  AttributeRequirement_AttributeRequirement_SkillIdToSkill              AttributeRequirement[]       @relation("AttributeRequirement_SkillIdToSkill")
+  AttributeRequirement_AttributeRequirement_SkillId1ToSkill             AttributeRequirement[]       @relation("AttributeRequirement_SkillId1ToSkill")
+  ItemDefinition                                                        ItemDefinition[]
+  MasterSkillDefinition_MasterSkillDefinition_ReplacedSkillIdToSkill    MasterSkillDefinition[]      @relation("MasterSkillDefinition_ReplacedSkillIdToSkill")
+  MasterSkillDefinitionSkill                                            MasterSkillDefinitionSkill[]
+  MonsterDefinition                                                     MonsterDefinition[]
+  QuestReward                                                           QuestReward[]
+  AttributeDefinition                                                   AttributeDefinition?         @relation(fields: [ElementalModifierTargetId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Skill_AttributeDefinition_ElementalModifierTargetId")
+  GameConfiguration                                                     GameConfiguration?           @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Skill_GameConfiguration_GameConfigurationId")
+  MagicEffectDefinition                                                 MagicEffectDefinition?       @relation(fields: [MagicEffectDefId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Skill_MagicEffectDefinition_MagicEffectDefId")
+  MasterSkillDefinition_Skill_MasterDefinitionIdToMasterSkillDefinition MasterSkillDefinition?       @relation("Skill_MasterDefinitionIdToMasterSkillDefinition", fields: [MasterDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Skill_MasterSkillDefinition_MasterDefinitionId")
+  SkillCharacterClass                                                   SkillCharacterClass[]
+  SkillComboStep                                                        SkillComboStep[]
+  SkillEntry                                                            SkillEntry[]
+
+  @@index([ElementalModifierTargetId], map: "IX_Skill_ElementalModifierTargetId")
+  @@index([GameConfigurationId], map: "IX_Skill_GameConfigurationId")
+  @@index([MagicEffectDefId], map: "IX_Skill_MagicEffectDefId")
+  @@schema("config")
+}
+
+model SkillCharacterClass {
+  SkillId          String         @db.Uuid
+  CharacterClassId String         @db.Uuid
+  CharacterClass   CharacterClass @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SkillCharacterClass_CharacterClass_CharacterClassId")
+  Skill            Skill          @relation(fields: [SkillId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SkillCharacterClass_Skill_SkillId")
+
+  @@id([SkillId, CharacterClassId], map: "PK_SkillCharacterClass")
+  @@index([CharacterClassId], map: "IX_SkillCharacterClass_CharacterClassId")
+  @@schema("config")
+}
+
+model SkillComboDefinition {
+  Id                    String                  @id(map: "PK_SkillComboDefinition") @db.Uuid
+  Name                  String
+  MaximumCompletionTime Unsupported("interval")
+  CharacterClass        CharacterClass?
+  SkillComboStep        SkillComboStep[]
+
+  @@schema("config")
+}
+
+model SkillComboStep {
+  Id                     String                @id(map: "PK_SkillComboStep") @db.Uuid
+  SkillId                String?               @db.Uuid
+  SkillComboDefinitionId String?               @db.Uuid
+  Order                  Int
+  IsFinalStep            Boolean
+  SkillComboDefinition   SkillComboDefinition? @relation(fields: [SkillComboDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SkillComboStep_SkillComboDefinition_SkillComboDefinitionId")
+  Skill                  Skill?                @relation(fields: [SkillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SkillComboStep_Skill_SkillId")
+
+  @@index([SkillComboDefinitionId], map: "IX_SkillComboStep_SkillComboDefinitionId")
+  @@index([SkillId], map: "IX_SkillComboStep_SkillId")
+  @@schema("config")
+}
+
+model StatAttributeDefinition {
+  Id                  String               @id(map: "PK_StatAttributeDefinition") @db.Uuid
+  AttributeId         String?              @db.Uuid
+  CharacterClassId    String?              @db.Uuid
+  BaseValue           Float                @db.Real
+  IncreasableByPlayer Boolean
+  AttributeDefinition AttributeDefinition? @relation(fields: [AttributeId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_StatAttributeDefinition_AttributeDefinition_AttributeId")
+  CharacterClass      CharacterClass?      @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StatAttributeDefinition_CharacterClass_CharacterClassId")
+
+  @@index([AttributeId], map: "IX_StatAttributeDefinition_AttributeId")
+  @@index([CharacterClassId], map: "IX_StatAttributeDefinition_CharacterClassId")
+  @@schema("config")
+}
+
+model SystemConfiguration {
+  Id                  String  @id(map: "PK_SystemConfiguration") @db.Uuid
+  IpResolver          Int
+  IpResolverParameter String?
+  AutoStart           Boolean
+  AutoUpdateSchema    Boolean
+  ReadConsoleInput    Boolean
+
+  @@schema("config")
+}
+
+model WarpInfo {
+  Id                  String             @id(map: "PK_WarpInfo") @db.Uuid
+  GateId              String?            @db.Uuid
+  GameConfigurationId String?            @db.Uuid
+  Index               Int
+  Name                String
+  Costs               Int
+  LevelRequirement    Int
+  ExitGate            ExitGate?          @relation(fields: [GateId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WarpInfo_ExitGate_GateId")
+  GameConfiguration   GameConfiguration? @relation(fields: [GameConfigurationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_WarpInfo_GameConfiguration_GameConfigurationId")
+
+  @@index([GameConfigurationId], map: "IX_WarpInfo_GameConfigurationId")
+  @@index([GateId], map: "IX_WarpInfo_GateId")
+  @@schema("config")
+}
+
+model Account {
+  Id                    String                  @id(map: "PK_Account") @db.Uuid
+  VaultId               String?                 @unique(map: "IX_Account_VaultId") @db.Uuid
+  LoginName             String                  @unique(map: "IX_Account_LoginName") @db.VarChar(10)
+  PasswordHash          String
+  SecurityCode          String
+  EMail                 String                  @unique
+  RegistrationDate      DateTime                @db.Timestamptz(6) @default(now())
+  State                 Int
+  TimeZone              Int                     @db.SmallInt
+  VaultPassword         String
+  IsVaultExtended       Boolean
+  ChatBanUntil          DateTime?               @db.Timestamptz(6)
+  ItemStorage           ItemStorage?            @relation(fields: [VaultId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Account_ItemStorage_VaultId")
+  AccountCharacterClass AccountCharacterClass[]
+  Character             Character[]
+  StatAttribute         StatAttribute[]
+
+  @@schema("data")
+}
+
+model AccountCharacterClass {
+  AccountId        String         @db.Uuid
+  CharacterClassId String         @db.Uuid
+  Account          Account        @relation(fields: [AccountId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AccountCharacterClass_Account_AccountId")
+  CharacterClass   CharacterClass @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AccountCharacterClass_CharacterClass_CharacterClassId")
+
+  @@id([AccountId, CharacterClassId], map: "PK_AccountCharacterClass")
+  @@index([CharacterClassId], map: "IX_AccountCharacterClass_CharacterClassId")
+  @@schema("data")
+}
+
+model AppearanceData {
+  Id                     String           @id(map: "PK_AppearanceData") @db.Uuid
+  CharacterClassId       String?          @db.Uuid
+  Pose                   Int              @db.SmallInt
+  FullAncientSetEquipped Boolean
+  CharacterClass         CharacterClass?  @relation(fields: [CharacterClassId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_AppearanceData_CharacterClass_CharacterClassId")
+  ItemAppearance         ItemAppearance[]
+  LetterBody             LetterBody?
+
+  @@index([CharacterClassId], map: "IX_AppearanceData_CharacterClassId")
+  @@schema("data")
+}
+
+model Character {
+  Id                     String                   @id(map: "PK_Character") @db.Uuid
+  CharacterClassId       String                   @db.Uuid
+  CurrentMapId           String?                  @db.Uuid
+  InventoryId            String?                  @unique(map: "IX_Character_InventoryId") @db.Uuid
+  AccountId              String?                  @db.Uuid
+  Name                   String                   @unique(map: "IX_Character_Name") @db.VarChar(10)
+  CharacterSlot          Int                      @db.SmallInt
+  CreateDate             DateTime                 @db.Timestamptz(6)
+  Experience             BigInt
+  MasterExperience       BigInt
+  LevelUpPoints          Int
+  MasterLevelUpPoints    Int
+  PositionX              Int                      @db.SmallInt
+  PositionY              Int                      @db.SmallInt
+  PlayerKillCount        Int
+  StateRemainingSeconds  Int
+  State                  Int
+  CharacterStatus        Int
+  Pose                   Int                      @db.SmallInt
+  UsedFruitPoints        Int
+  UsedNegFruitPoints     Int
+  InventoryExtensions    Int
+  KeyConfiguration       Bytes?
+  MuHelperConfiguration  Bytes?
+  Account                Account?                 @relation(fields: [AccountId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Character_Account_AccountId")
+  CharacterClass         CharacterClass           @relation(fields: [CharacterClassId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Character_CharacterClass_CharacterClassId")
+  GameMapDefinition      GameMapDefinition?       @relation(fields: [CurrentMapId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Character_GameMapDefinition_CurrentMapId")
+  ItemStorage            ItemStorage?             @relation(fields: [InventoryId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Character_ItemStorage_InventoryId")
+  CharacterDropItemGroup CharacterDropItemGroup[]
+  CharacterQuestState    CharacterQuestState[]
+  LetterHeader           LetterHeader[]
+  MiniGameRankingEntry   MiniGameRankingEntry[]
+  SkillEntry             SkillEntry[]
+  StatAttribute          StatAttribute[]
+  GuildMember            GuildMember?
+
+  @@index([AccountId], map: "IX_Character_AccountId")
+  @@index([CharacterClassId], map: "IX_Character_CharacterClassId")
+  @@index([CurrentMapId], map: "IX_Character_CurrentMapId")
+  @@schema("data")
+}
+
+model CharacterDropItemGroup {
+  CharacterId     String        @db.Uuid
+  DropItemGroupId String        @db.Uuid
+  Character       Character     @relation(fields: [CharacterId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CharacterDropItemGroup_Character_CharacterId")
+  DropItemGroup   DropItemGroup @relation(fields: [DropItemGroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CharacterDropItemGroup_DropItemGroup_DropItemGroupId")
+
+  @@id([CharacterId, DropItemGroupId], map: "PK_CharacterDropItemGroup")
+  @@index([DropItemGroupId], map: "IX_CharacterDropItemGroup_DropItemGroupId")
+  @@schema("data")
+}
+
+model CharacterQuestState {
+  Id                                                                       String                             @id(map: "PK_CharacterQuestState") @db.Uuid
+  LastFinishedQuestId                                                      String?                            @db.Uuid
+  ActiveQuestId                                                            String?                            @db.Uuid
+  CharacterId                                                              String?                            @db.Uuid
+  Group                                                                    Int                                @db.SmallInt
+  ClientActionPerformed                                                    Boolean
+  Character                                                                Character?                         @relation(fields: [CharacterId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CharacterQuestState_Character_CharacterId")
+  QuestDefinition_CharacterQuestState_ActiveQuestIdToQuestDefinition       QuestDefinition?                   @relation("CharacterQuestState_ActiveQuestIdToQuestDefinition", fields: [ActiveQuestId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CharacterQuestState_QuestDefinition_ActiveQuestId")
+  QuestDefinition_CharacterQuestState_LastFinishedQuestIdToQuestDefinition QuestDefinition?                   @relation("CharacterQuestState_LastFinishedQuestIdToQuestDefinition", fields: [LastFinishedQuestId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CharacterQuestState_QuestDefinition_LastFinishedQuestId")
+  QuestMonsterKillRequirementState                                         QuestMonsterKillRequirementState[]
+
+  @@index([ActiveQuestId], map: "IX_CharacterQuestState_ActiveQuestId")
+  @@index([CharacterId], map: "IX_CharacterQuestState_CharacterId")
+  @@index([LastFinishedQuestId], map: "IX_CharacterQuestState_LastFinishedQuestId")
+  @@schema("data")
+}
+
+model Item {
+  Id                String              @id(map: "PK_Item") @db.Uuid
+  ItemStorageId     String?             @db.Uuid
+  DefinitionId      String?             @db.Uuid
+  ItemSlot          Int                 @db.SmallInt
+  Durability        Float
+  Level             Int                 @db.SmallInt
+  HasSkill          Boolean
+  SocketCount       Int
+  StorePrice        Int?
+  PetExperience     Int                 @default(0)
+  QuestReward       QuestReward?
+  ItemDefinition    ItemDefinition?     @relation(fields: [DefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Item_ItemDefinition_DefinitionId")
+  ItemStorage       ItemStorage?        @relation(fields: [ItemStorageId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Item_ItemStorage_ItemStorageId")
+  ItemItemOfItemSet ItemItemOfItemSet[]
+  ItemOptionLink    ItemOptionLink[]
+
+  @@index([DefinitionId], map: "IX_Item_DefinitionId")
+  @@index([ItemStorageId], map: "IX_Item_ItemStorageId")
+  @@schema("data")
+}
+
+model ItemAppearance {
+  Id                           String                         @id(map: "PK_ItemAppearance") @db.Uuid
+  DefinitionId                 String?                        @db.Uuid
+  AppearanceDataId             String?                        @db.Uuid
+  ItemSlot                     Int                            @db.SmallInt
+  Level                        Int                            @db.SmallInt
+  AppearanceData               AppearanceData?                @relation(fields: [AppearanceDataId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemAppearance_AppearanceData_AppearanceDataId")
+  ItemDefinition               ItemDefinition?                @relation(fields: [DefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemAppearance_ItemDefinition_DefinitionId")
+  ItemAppearanceItemOptionType ItemAppearanceItemOptionType[]
+
+  @@index([AppearanceDataId], map: "IX_ItemAppearance_AppearanceDataId")
+  @@index([DefinitionId], map: "IX_ItemAppearance_DefinitionId")
+  @@schema("data")
+}
+
+model ItemAppearanceItemOptionType {
+  ItemAppearanceId String         @db.Uuid
+  ItemOptionTypeId String         @db.Uuid
+  ItemAppearance   ItemAppearance @relation(fields: [ItemAppearanceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemAppearanceItemOptionType_ItemAppearance_ItemAppearanceId")
+  ItemOptionType   ItemOptionType @relation(fields: [ItemOptionTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemAppearanceItemOptionType_ItemOptionType_ItemOptionTypeId")
+
+  @@id([ItemAppearanceId, ItemOptionTypeId], map: "PK_ItemAppearanceItemOptionType")
+  @@index([ItemOptionTypeId], map: "IX_ItemAppearanceItemOptionType_ItemOptionTypeId")
+  @@schema("data")
+}
+
+model ItemItemOfItemSet {
+  ItemId          String        @db.Uuid
+  ItemOfItemSetId String        @db.Uuid
+  ItemOfItemSet   ItemOfItemSet @relation(fields: [ItemOfItemSetId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemItemOfItemSet_ItemOfItemSet_ItemOfItemSetId")
+  Item            Item          @relation(fields: [ItemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemItemOfItemSet_Item_ItemId")
+
+  @@id([ItemId, ItemOfItemSetId], map: "PK_ItemItemOfItemSet")
+  @@index([ItemOfItemSetId], map: "IX_ItemItemOfItemSet_ItemOfItemSetId")
+  @@schema("data")
+}
+
+model ItemOptionLink {
+  Id                    String                 @id(map: "PK_ItemOptionLink") @db.Uuid
+  ItemOptionId          String?                @db.Uuid
+  ItemId                String?                @db.Uuid
+  Level                 Int
+  Index                 Int
+  IncreasableItemOption IncreasableItemOption? @relation(fields: [ItemOptionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemOptionLink_IncreasableItemOption_ItemOptionId")
+  Item                  Item?                  @relation(fields: [ItemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ItemOptionLink_Item_ItemId")
+
+  @@index([ItemId], map: "IX_ItemOptionLink_ItemId")
+  @@index([ItemOptionId], map: "IX_ItemOptionLink_ItemOptionId")
+  @@schema("data")
+}
+
+model ItemStorage {
+  Id                String             @id(map: "PK_ItemStorage") @db.Uuid
+  Money             Int
+  MonsterDefinition MonsterDefinition?
+  Account           Account?
+  Character         Character?
+  Item              Item[]
+
+  @@schema("data")
+}
+
+model LetterBody {
+  Id                 String          @id(map: "PK_LetterBody") @db.Uuid
+  HeaderId           String?         @db.Uuid
+  SenderAppearanceId String?         @unique(map: "IX_LetterBody_SenderAppearanceId") @db.Uuid
+  Message            String
+  Rotation           Int             @db.SmallInt
+  Animation          Int             @db.SmallInt
+  AppearanceData     AppearanceData? @relation(fields: [SenderAppearanceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_LetterBody_AppearanceData_SenderAppearanceId")
+  LetterHeader       LetterHeader?   @relation(fields: [HeaderId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_LetterBody_LetterHeader_HeaderId")
+
+  @@index([HeaderId], map: "IX_LetterBody_HeaderId")
+  @@schema("data")
+}
+
+model LetterHeader {
+  Id          String       @id(map: "PK_LetterHeader") @db.Uuid
+  ReceiverId  String       @db.Uuid
+  SenderName  String?
+  Subject     String?
+  LetterDate  DateTime     @db.Timestamptz(6)
+  ReadFlag    Boolean
+  CharacterId String       @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  LetterBody  LetterBody[]
+  Character   Character    @relation(fields: [ReceiverId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_LetterHeader_Character_ReceiverId")
+
+  @@index([ReceiverId], map: "IX_LetterHeader_ReceiverId")
+  @@schema("data")
+}
+
+model MiniGameRankingEntry {
+  Id                 String              @id(map: "PK_MiniGameRankingEntry") @db.Uuid
+  CharacterId        String?             @db.Uuid
+  MiniGameId         String?             @db.Uuid
+  GameInstanceId     String              @db.Uuid
+  Timestamp          DateTime?           @db.Timestamptz(6)
+  Score              Int
+  Rank               Int
+  Character          Character?          @relation(fields: [CharacterId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameRankingEntry_Character_CharacterId")
+  MiniGameDefinition MiniGameDefinition? @relation(fields: [MiniGameId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MiniGameRankingEntry_MiniGameDefinition_MiniGameId")
+
+  @@index([CharacterId], map: "IX_MiniGameRankingEntry_CharacterId")
+  @@index([MiniGameId], map: "IX_MiniGameRankingEntry_MiniGameId")
+  @@schema("data")
+}
+
+model QuestMonsterKillRequirementState {
+  Id                          String                       @id(map: "PK_QuestMonsterKillRequirementState") @db.Uuid
+  RequirementId               String?                      @db.Uuid
+  CharacterQuestStateId       String?                      @db.Uuid
+  KillCount                   Int
+  CharacterQuestState         CharacterQuestState?         @relation(fields: [CharacterQuestStateId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QuestMonsterKillRequirementState_CharacterQuestState_Charac~")
+  QuestMonsterKillRequirement QuestMonsterKillRequirement? @relation(fields: [RequirementId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuestMonsterKillRequirementState_QuestMonsterKillRequiremen~")
+
+  @@index([CharacterQuestStateId], map: "IX_QuestMonsterKillRequirementState_CharacterQuestStateId")
+  @@index([RequirementId], map: "IX_QuestMonsterKillRequirementState_RequirementId")
+  @@schema("data")
+}
+
+model SkillEntry {
+  Id          String     @id(map: "PK_SkillEntry") @db.Uuid
+  SkillId     String?    @db.Uuid
+  CharacterId String?    @db.Uuid
+  Level       Int
+  Character   Character? @relation(fields: [CharacterId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SkillEntry_Character_CharacterId")
+  Skill       Skill?     @relation(fields: [SkillId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SkillEntry_Skill_SkillId")
+
+  @@index([CharacterId], map: "IX_SkillEntry_CharacterId")
+  @@index([SkillId], map: "IX_SkillEntry_SkillId")
+  @@schema("data")
+}
+
+model StatAttribute {
+  Id                  String               @id(map: "PK_StatAttribute") @db.Uuid
+  DefinitionId        String?              @db.Uuid
+  CharacterId         String?              @db.Uuid
+  Value               Float                @db.Real
+  AccountId           String?              @db.Uuid
+  Account             Account?             @relation(fields: [AccountId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StatAttribute_Account_AccountId")
+  AttributeDefinition AttributeDefinition? @relation(fields: [DefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_StatAttribute_AttributeDefinition_DefinitionId")
+  Character           Character?           @relation(fields: [CharacterId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_StatAttribute_Character_CharacterId")
+
+  @@index([AccountId], map: "IX_StatAttribute_AccountId")
+  @@index([CharacterId], map: "IX_StatAttribute_CharacterId")
+  @@index([DefinitionId], map: "IX_StatAttribute_DefinitionId")
+  @@schema("data")
+}
+
+model Friend {
+  Id          String  @id(map: "PK_Friend") @db.Uuid
+  CharacterId String  @db.Uuid
+  FriendId    String  @db.Uuid
+  Accepted    Boolean
+  RequestOpen Boolean
+
+  @@unique([CharacterId, FriendId], map: "AK_Friend_CharacterId_FriendId")
+  @@schema("friend")
+}
+
+model Guild {
+  Id                                       String        @id(map: "PK_Guild") @db.Uuid
+  HostilityId                              String?       @db.Uuid
+  AllianceGuildId                          String?       @db.Uuid
+  Name                                     String        @unique(map: "IX_Guild_Name") @db.VarChar(8)
+  Logo                                     Bytes?
+  Score                                    Int
+  Notice                                   String?
+  Guild_Guild_AllianceGuildIdToGuild       Guild?        @relation("Guild_AllianceGuildIdToGuild", fields: [AllianceGuildId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Guild_Guild_AllianceGuildId")
+  other_Guild_Guild_AllianceGuildIdToGuild Guild[]       @relation("Guild_AllianceGuildIdToGuild")
+  Guild_Guild_HostilityIdToGuild           Guild?        @relation("Guild_HostilityIdToGuild", fields: [HostilityId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Guild_Guild_HostilityId")
+  other_Guild_Guild_HostilityIdToGuild     Guild[]       @relation("Guild_HostilityIdToGuild")
+  GuildMember                              GuildMember[]
+
+  @@index([AllianceGuildId], map: "IX_Guild_AllianceGuildId")
+  @@index([HostilityId], map: "IX_Guild_HostilityId")
+  @@schema("guild")
+}
+
+model GuildMember {
+  Id        String    @id(map: "PK_GuildMember") @db.Uuid
+  GuildId   String    @db.Uuid
+  Status    Int       @db.SmallInt
+  Character Character @relation(fields: [Id], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GuildMember_Character_Id")
+  Guild     Guild     @relation(fields: [GuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GuildMember_Guild_GuildId")
+
+  @@index([GuildId], map: "IX_GuildMember_GuildId")
+  @@schema("guild")
+}
+
+model EFMigrationsHistory {
+  MigrationId    String @id(map: "PK___EFMigrationsHistory") @db.VarChar(150)
+  ProductVersion String @db.VarChar(32)
+
+  @@map("__EFMigrationsHistory")
+  @@schema("public")
+}
