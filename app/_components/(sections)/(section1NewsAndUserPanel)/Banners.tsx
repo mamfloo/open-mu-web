@@ -19,7 +19,7 @@ export default function Banners() {
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [])
+  })
 
   function onClick() {
     if(imgArray.length === currentImg+1){
