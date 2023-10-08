@@ -1,12 +1,11 @@
-This is a website for a MU Online server made to work with https://github.com/MUnique/OpenMU
+This is a website for MU Online private servers compatible with https://github.com/MUnique/OpenMU files.
 
 
 ## Getting Started
 
 Inside the .env set your postgres username / password / url
 DATABASE_URL="postgresql://username:password@localhost:5432/openmu"
-
-Then in the same .env set the GAMESERVER_URL it it referred to the gameserver url
+Then in the same .env set the GAMESERVER_URL
 
 Now, run the development server:
 
@@ -21,7 +20,6 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 
 ## Features:
 
