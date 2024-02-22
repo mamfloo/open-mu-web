@@ -27,8 +27,6 @@ export default function LoginForm() {
       password: password,
       redirect: false
     })
-    setUsername("");
-    setPassword("");
     if(signInData?.error){
       toast.error(" Invalid Username or Password");
     }else {

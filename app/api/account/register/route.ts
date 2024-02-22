@@ -20,7 +20,6 @@ export async function POST(req: Request) {
     console.log(req.body);
     try {
         const body = await req.json();
-        console.log(body);
         const {LoginName, EMail, Password} = registerSchema.parse(body);
 
         const existingEmail = await prisma.account.findUnique({

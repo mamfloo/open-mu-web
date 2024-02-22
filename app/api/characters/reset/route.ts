@@ -34,8 +34,6 @@ export async function POST(req: Request){
     const noriaMap = "00000300-0003-0000-0000-000000000000";
     const elbelandMap = "00000300-0033-0000-0000-000000000000";
     const finalMap = elfAray.includes(clasId) ? noriaMap : sumArray.includes(clasId) ? elbelandMap : lorenciaMap;
-    console.log(clasId)
-    console.log(finalMap);
     const posX = finalMap == noriaMap ? 176 : finalMap == elbelandMap ? 51 : 141;
     const posY = finalMap == noriaMap ? 116 : finalMap == elbelandMap ? 226 : 121;
     //RESET AND ZEN TO RESET SETTED IN .ENV
@@ -67,7 +65,8 @@ export async function POST(req: Request){
           ]
         }
       });
-    //check 
+    //if 2 then it means that the character was found 2 times and it means that it has the lvl to rr
+    //and 
     if(charToReset === 2) {
         //check if has enough money
         const enoughMoney = await prisma.itemStorage.findFirst({
