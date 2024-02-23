@@ -3,6 +3,7 @@
 import { Guild } from "@prisma/client";
 import { use, useEffect } from "react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function TopGuilds() {
   const [guilds, setGuilds] = useState<Guild[]>([])
@@ -10,9 +11,13 @@ export default function TopGuilds() {
   //calls the tp guild api
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/guilds`);
-      const res = await response.json();
-      setGuilds(res);
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/guilds`);
+        const res = await response.json();
+        setGuilds(res);
+      } catch (e) {
+        toast.error("There was a problem! Try again later")
+      }
     }
     fetchData();
   }, [])

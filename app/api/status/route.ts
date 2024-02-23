@@ -5,7 +5,7 @@ async function getStatus() {
         const result = await fetch(`${process.env.GAMESERVER_URL}/api/status`, {next: {revalidate: 0}});
         return result;
     } catch (e) {
-        console.log("Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly");
+        console.log("Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly(route)");
     }
 }
 
@@ -14,6 +14,6 @@ export async function GET(){
     if(result !== undefined){
         return NextResponse.json(await result.json(), {status: 201});
     } else {
-        throw new Error("Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly")
+        return NextResponse.json({message: "Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly"}, {status: 500});
     }
 }

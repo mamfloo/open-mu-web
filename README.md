@@ -1,4 +1,40 @@
-This is a website for MU Online private servers compatible with https://github.com/MUnique/OpenMU files.
+This is a CMS website for MU Online private servers compatible with https://github.com/MUnique/OpenMU files.
+
+
+## Features:
+
+ Character Panel:
+ 
+    * Reset system, can choose at what level to reset and the price to reset
+    * Add Stats
+    * ClearPk, can choose the price in zen
+    * Reset Stats, can choose the price in zen
+
+**Account Panel:**
+
+    * Change Password
+
+**Rankings:**
+
+    * Top Reset, level, master level
+    * Top Killers
+    * Top Guilds
+    * Online Players
+
+**Server Statistics:**
+
+    * Show server status
+    * Show how many players are online
+
+**Register new Account**
+
+**Downlaod Section**
+
+**Info section**
+
+**News Section**
+
+**Terms and Conditions**
 
 
 ## Getting Started
@@ -21,31 +57,6 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Features:
-
-Character Panel:
-    Reset system, can choose at what level to reset and the price to reset
-    Add Stats
-    ClearPk, can choose the price
-
-Account Panel:
-    Change Password
-
-Rankings:
-    Top Reset, level, master level
-    Top Killers
-    Top Guilds
-    Online Players
-
-Server Statistics:
-    Show server status
-    Show how many players are online
-
-Register new Account
-Downlaod Section
-Info section
-News Section
-Terms and Conditions
 
 
 

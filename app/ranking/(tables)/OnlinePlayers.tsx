@@ -13,21 +13,25 @@ export default function OnlinePlayers() {
     //call the online player api to see how many players there are on
     useEffect(() => {
         const fetchData = async () => {
-          const status = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/status`);
-          if(status.ok){
-            const serverStatus =  await status.json();
-            const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/online`, {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json"
-              },
-              body: JSON.stringify(serverStatus)
-            })
-            const final = await result.json();
-            setCharacters(final)
-          } else {
-            toast.error("There was a problem trying to find the online users. Try again later.")
-          }    
+          try {
+            const status = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/status`);
+            if(status.ok){
+              const serverStatus =  await status.json();
+              const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/online`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(serverStatus)
+              })
+              const final = await result.json();
+              setCharacters(final)
+            } else {
+              toast.error("There was a problem trying to find the online users. Try again later.")
+            }    
+          } catch (e) {
+            toast.error("There was a problem! Try again later")
+          }
         }
         fetchData()
     },[])

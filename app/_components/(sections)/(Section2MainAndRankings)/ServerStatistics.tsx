@@ -1,22 +1,28 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import OnlineStatus from "../../../../public/img/online.png"
 import OfflineStatus from "../../../../public/img/offline.png"
 import { ServerStatus } from '@/app/_models/serverStatus';
 
-async function getServerStatus() {
-  //try to call the api to see if server is on and how many players there are
-  try {
-    const status = await fetch(`${process.env.GAMESERVER_URL}/api/status`, {next: {revalidate: 0}});
-    return await status.json();
-  } catch (e){
-    console.log("Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly");
-  }
-}
+export default function ServerStatistics() {
+  const [status, setStatus] = useState<ServerStatus>();
 
-export default async function ServerStatistics() {
+  useEffect(() => {
+    const checkStatus = async() => {
+        try {
+          const fetchData = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/status`);
+          if(fetchData.ok){
+            setStatus(await fetchData.json())
+          }
+        } catch (e){
+          console.log("Couldn't connect to the gameserver, make sure the GAMESERVER_URL is set correctly(serverStats)");
+        }
+    }
+    checkStatus();
+  }, []);
 
-  const status: ServerStatus = await getServerStatus();
   /* const maxOnlinePlayers = 120 //SET THE NUMBER OF MAX PLAYERS ONLINE (abbandoned for now)
   const percentage = "w-3/12" */ 
 
@@ -34,7 +40,7 @@ export default async function ServerStatistics() {
         <div className={`ml-[2px] ${percentage} h-1 bg-green-400`}></div>
       </div> */}
       <div className='text-center'>
-        <p className='text-primary text-lg'>Online Users: <span className='text-xl'>{status?.players | 0}</span></p>
+        <p className='text-primary text-lg'>Online Users: <span className='text-xl'>{status?.players || 0}</span></p>
       </div>
     </div>
   )

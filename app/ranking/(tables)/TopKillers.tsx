@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { getImage } from "@/app/_utils/characterAvatarReturn";
 import Image from "next/image"
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import { toast } from "react-toastify";
 
 export default function TopKillers() {
   const [characters, setCharacters] = useState<Character[]>([])
@@ -13,9 +14,13 @@ export default function TopKillers() {
   //calls the top killers api
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/killers`);
-      const res = await response.json();
-      setCharacters(res);
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/killers`);
+        const res = await response.json();
+        setCharacters(res);
+      } catch (e) {
+        toast.error("There was a problem! Try again later")
+      }
     }
     fetchData();
   }, [])

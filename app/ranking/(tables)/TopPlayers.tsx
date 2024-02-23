@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image"
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { getImage } from "@/app/_utils/characterAvatarReturn";
+import { toast } from "react-toastify";
 
 
 export default function TopPlayers() {
@@ -13,9 +14,13 @@ export default function TopPlayers() {
   //cals the top players api
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/reset`);
-      const res = await response.json();
-      setCharacters(res);
+      try{
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters/ranking/reset`);
+        const res = await response.json();
+        setCharacters(res);
+      }catch (e) {
+        toast.error("There was a problem! Try again later")
+      }
     }
     fetchData();
   }, [])
