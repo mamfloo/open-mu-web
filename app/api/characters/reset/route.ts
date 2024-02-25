@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
+  try {
+
     const { name, clasId } = await req.json()
     
     //CHECKS
@@ -15,17 +17,22 @@ export async function POST(req: Request){
                 AccountId: session?.user.id
             }
         })
-        if(!verifica.map(c => c.Name).includes(name)){
-            return NextResponse.json({message: "You can't do this!"}, {status: 400})
+        if(verifica && !verifica.map(c => c.Name).includes(name)){
+            return NextResponse.json({message: "You can't do this! Try to Login again."}, {status: 400})
         }
     } else {
         return NextResponse.json({message: "You can't do this!"}, {status: 400})
     }
     //check if character is online
-    const online = await (await fetch(`${process.env.NEXT_PUBLIC_URL}/api/status`)).json()
-    if(online.playersList.includes(name)){
-        return NextResponse.json({message: "Disconnect from your account!"}, {status: 400})
-    };
+    const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/status`);
+    if(result.ok){
+      const online = await result.json();
+      if(online && online.playersList.includes(name)){
+          return NextResponse.json({message: "Disconnect from your account!"}, {status: 400})
+      };
+    } else {
+      return NextResponse.json({message: "Couldn't reach the server, try again later"},{status: 500});
+    }
 
     //select the right map and coordinates x,y to reset the character to
     const elfAray = ["00000040-000b-0000-0000-000000000000", "00000040-000a-0000-0000-000000000000", "00000040-0008-0000-0000-000000000000"];
@@ -126,5 +133,9 @@ export async function POST(req: Request){
         return NextResponse.json({message: "You aren't lvl " + lvlToReset + " or you are at maximum reset " + maxReset}, {status: 400});
     }
     return NextResponse.json({message: "Character reseted successfully!"}, {status: 200})
+  } catch (e) {
+    console.log("error", e);
+    return NextResponse.json({message: "There was a problem while resetting your character"}, {status: 400});
+  }
 
 }

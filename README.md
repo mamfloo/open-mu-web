@@ -5,7 +5,7 @@ This is a CMS website for MU Online private servers compatible with https://gith
 
  Character Panel:
  
-    * Reset system, can choose at what level to reset and the price to reset
+    * Reset system, can choose at what level to reset, max reset, and the price to reset
     * Add Stats
     * ClearPk, can choose the price in zen
     * Reset Stats, can choose the price in zen
@@ -46,13 +46,8 @@ Then in the same .env set the GAMESERVER_URL
 Now, run the development server:
 
 ```bash
+npm i
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

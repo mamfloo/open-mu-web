@@ -27,7 +27,7 @@ export default function SecondaryNav() {
         </button>
       </div>
       <div className="w-fit absolute right-10 mt-10">
-        <Link href={"https://discord.com/invite/2u5Agkd"} target="_blank"><Image src={DiscordIcon} width={60} alt="discor_logo" /></Link>
+        <Link href={process.env.NEXT_PUBLIC_DISCORD_LINK || ""} target="_blank"><Image src={DiscordIcon} width={60} alt="discord_logo" /></Link>
       </div>
     </div>
   )

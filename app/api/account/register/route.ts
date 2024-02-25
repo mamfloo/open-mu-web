@@ -17,7 +17,6 @@ const registerSchema = z.object({
 
 
 export async function POST(req: Request) {
-    console.log(req.body);
     try {
         const body = await req.json();
         const {LoginName, EMail, Password} = registerSchema.parse(body);

@@ -7,6 +7,11 @@ import visual from "@/public/img/download/visual.png";
 import Link from "next/link";
 
 export default function Download() {
+
+  const gdLink = process.env.NEXT_PUBLIC_GOODLE_DRIVE_LINK
+  const mfLink = process.env.NEXT_PUBLIC_MEDIAFIRE_LINK
+  const megaLink = process.env.NEXT_PUBLIC_MEGA_LINK
+
   return (
     <div className="m-auto py-10 px-20 flex flex-col w-full">
       <div>
@@ -14,9 +19,9 @@ export default function Download() {
         <hr className="border-t-2 border-slate-300"/>
         <p className="text-lg text-primary">Downlaod the client for free</p>
         <div className="flex gap-10 mt-10">
-          <Link href="https://mega.io/it"><Image src={google} width={180} quality={100} alt={"google_drive"}/></Link>
-          <Link href="https://mega.io/it"><Image src={mediafire} width={180} quality={100} alt={"google_drive"}/></Link>
-          <Link href="https://mega.io/it"><Image src={mega} width={180} quality={100} alt={"google_drive"}/></Link>
+          {(gdLink || gdLink !== "")&& <Link href={process.env.NEXT_PUBLIC_GOODLE_DRIVE_LINK!}><Image src={google} width={180} quality={100} alt={"google_drive"} /></Link>}
+          {(mfLink || mfLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEDIAFIRE_LINK!}><Image src={mediafire} width={180} quality={100} alt={"mediafire"}/></Link>}
+          {(megaLink || megaLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEGA_LINK!}><Image src={mega} width={180} quality={100} alt={"mega"}/></Link>}          
         </div>
       </div>
       <div className="mt-8">
@@ -24,8 +29,8 @@ export default function Download() {
         <hr className="border-t-2 border-slate-300"/>
         <p className="text-lg text-primary">Make sure you downlaod the latest drivers</p>
         <div className="flex gap-10 mt-10">
-          <Link href="https://dotnet.microsoft.com/en-us/download/dotnet-framework"><Image src={netframework} width={180} quality={100} alt={"google_drive"}/></Link>
-          <Link href="https://dotnet.microsoft.com/en-us/download/dotnet-framework"><Image src={visual} width={180} quality={100} alt={"google_drive"}/></Link>
+          <Link href="https://dotnet.microsoft.com/en-us/download"><Image src={netframework} width={180} quality={100} alt={"dotnet"}/></Link>
+          <Link href="https://dotnet.microsoft.com/en-us/download"><Image src={visual} width={180} quality={100} alt={"dotnet"}/></Link>
         </div>
       </div>
       <div className="mt-8">
