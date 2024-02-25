@@ -4,7 +4,7 @@ import { compare, hash } from "bcrypt";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request){
+export async function PUT(req: Request){
     try {
 
         const {name, oldPassword, newPassword, repeatNewPassword} = await req.json()
@@ -13,13 +13,12 @@ export async function POST(req: Request){
         //check if the right user is sending the request
         const session = await getServerSession(authOptions);
         if(session){
-            if(session.user.username !== name){
+            console.log("name", session.user.username)
+            if(!session.user.username){
                 return NextResponse.json({message: "You can't do this!"}, {status: 400})
             }
         }
         //check if old pass and new pass aren't the same
-        console.log(oldPassword)
-        console.log(newPassword)
         if(oldPassword === newPassword){
             return NextResponse.json({message: "New password and old password are the same!"}, {status: 400});
         }
@@ -28,11 +27,14 @@ export async function POST(req: Request){
             return NextResponse.json({message: "New password and Reapeat password should match!"}, {status: 400});
         }
         //check if oldPassword correspond to the account
-        const account = await prisma.account.findFirst({
+        const account = await prisma.account.findUnique({
             where: {
-                LoginName: name
+                LoginName: session?.user.username
             }
         })
+        console.log('Account:', account);
+        console.log('Old password:', oldPassword);
+        console.log('New password:', newPassword);
         const passwordMatch = await compare(oldPassword, account?.PasswordHash!)
         if(!passwordMatch){
             return NextResponse.json({message: "The old password you inserted isn't correct!"}, {status: 400});

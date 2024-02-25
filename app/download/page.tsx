@@ -19,9 +19,9 @@ export default function Download() {
         <hr className="border-t-2 border-slate-300"/>
         <p className="text-lg text-primary">Downlaod the client for free</p>
         <div className="flex gap-10 mt-10">
-          {(gdLink || gdLink !== "")&& <Link href={process.env.NEXT_PUBLIC_GOODLE_DRIVE_LINK!}><Image src={google} width={180} quality={100} alt={"google_drive"} /></Link>}
-          {(mfLink || mfLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEDIAFIRE_LINK!}><Image src={mediafire} width={180} quality={100} alt={"mediafire"}/></Link>}
-          {(megaLink || megaLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEGA_LINK!}><Image src={mega} width={180} quality={100} alt={"mega"}/></Link>}          
+          {(gdLink && gdLink !== "")&& <Link href={process.env.NEXT_PUBLIC_GOODLE_DRIVE_LINK!}><Image src={google} width={180} quality={100} alt={"google_drive"} /></Link>}
+          {(mfLink && mfLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEDIAFIRE_LINK!}><Image src={mediafire} width={180} quality={100} alt={"mediafire"}/></Link>}
+          {(megaLink && megaLink !== "") && <Link href={process.env.NEXT_PUBLIC_MEGA_LINK!}><Image src={mega} width={180} quality={100} alt={"mega"}/></Link>}          
         </div>
       </div>
       <div className="mt-8">

@@ -6,9 +6,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
+        if(!process.env.NEXT_PUBLIC_ZEN_TO_RESET_STATS || process.env.NEXT_PUBLIC_ZEN_TO_RESET_STATS === ""){
+            return NextResponse.json({message: "Function disabled"}, {status: 400})
+        }
+
+
         const { name, clasId } = await req.json() as { name: string, clasId: string };
 
-        const zenToReset = +process.env.ZEN_TO_RESET_STATS!;
+        const zenToReset = +process.env.NEXT_PUBLIC_ZEN_TO_RESET_STATS!;
 
         //CHECK SESSION
         const session = await getServerSession(authOptions);

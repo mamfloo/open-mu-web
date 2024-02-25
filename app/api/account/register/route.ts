@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const {LoginName, EMail, Password} = registerSchema.parse(body);
 
-        const existingEmail = await prisma.account.findUnique({
+        const existingEmail = await prisma.account.findFirst({
             where: {
                 EMail: EMail
             }
@@ -49,7 +49,8 @@ export async function POST(req: Request) {
                 State: 0,
                 TimeZone: 0,
                 VaultPassword: "",
-                IsVaultExtended: false
+                IsVaultExtended: false,
+                RegistrationDate: new Date
             }
         })
 

@@ -14,6 +14,7 @@ export default function Account() {
     //set lognName
     async function setName(){
         const session = await getSession();
+        console.log("name ", session?.user.username!)
         setLoginName(session?.user.username!)
     }
 
@@ -22,7 +23,7 @@ export default function Account() {
         e.preventDefault()
         await setName();
         const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/account/changepassword`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },

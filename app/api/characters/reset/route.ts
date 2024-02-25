@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
   try {
+    if(!process.env.NEXT_PUBLIC_ZEN_TO_RESET || process.env.NEXT_PUBLIC_ZEN_TO_RESET === ""){
+        return NextResponse.json({message: "Function disabled"}, {status: 400})
+    }
 
     const { name, clasId } = await req.json()
     
@@ -45,7 +48,7 @@ export async function POST(req: Request){
     const posY = finalMap == noriaMap ? 116 : finalMap == elbelandMap ? 226 : 121;
     //RESET AND ZEN TO RESET SETTED IN .ENV
     const lvlToReset = +process.env.LVL_TO_RESET!
-    const zen = +process.env.ZEN_TO_RESET!
+    const zen = +process.env.NEXT_PUBLIC_ZEN_TO_RESET!
     const maxReset = +process.env.MAX_RESET!
     //check if character HAS THE RIGHT LVL TO RESET greater or equals to and if has reached max reset
     const charToReset = await prisma.statAttribute.count({

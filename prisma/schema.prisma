@@ -1382,8 +1382,8 @@ model Account {
   LoginName             String                  @unique(map: "IX_Account_LoginName") @db.VarChar(10)
   PasswordHash          String
   SecurityCode          String
-  EMail                 String                  @unique
-  RegistrationDate      DateTime                @db.Timestamptz(6) @default(now())
+  EMail                 String
+  RegistrationDate      DateTime                @db.Timestamptz(6)
   State                 Int
   TimeZone              Int                     @db.SmallInt
   VaultPassword         String
@@ -1711,4 +1711,12 @@ model EFMigrationsHistory {
 
   @@map("__EFMigrationsHistory")
   @@schema("public")
+}
+
+model OpenMuWeb_News {
+  id String @id @db.Uuid
+  title String
+  body String
+  author String //this is gonna correspond to the author account name(username)
+  @@schema("data")
 }

@@ -19,6 +19,10 @@ export default function CharactersPage({result}: {result: CharacterEdit[]}) {
     //if last one click is the same as the one clicked now close it
     const [lastClicked, setLastClicked] = useState(-1);
 
+    const zenToReset = process.env.NEXT_PUBLIC_ZEN_TO_RESET;
+    const zenToPkClear = process.env.NEXT_PUBLIC_ZEN_TO_PKCLEAR;
+    const zenToResetStats = process.env.NEXT_PUBLIC_ZEN_TO_RESET_STATS;
+
     //open/close accordion
     function openStatistic(index: number) {
         const arr = Array(5).fill(false);
@@ -110,18 +114,24 @@ export default function CharactersPage({result}: {result: CharacterEdit[]}) {
                 </div>
                 <div className="flex flex-col">
                     <div className="flex justify-between mr-2 gap-2">
-                        <button className="h-fit bg-primary/[0.1] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetCharacter(c.name, c.characterClassId)}>
-                            <Image src={ResetIcon} width={25} alt={"reset_icon"} className="inline-block mb-1"></Image> Reset
-                        </button>   
+                        {(zenToReset && zenToReset !== "") && 
+                            <button className="h-fit bg-primary/[0.1] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetCharacter(c.name, c.characterClassId)}>
+                                <Image src={ResetIcon} width={25} alt={"reset_icon"} className="inline-block mb-1"></Image> Reset
+                            </button>   
+                        }
                         <button className="h-fit bg-primary/[0.2] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => openStatistic(i)}>
                             <Image src={AddStatsIcon} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Add Stats
                         </button>
-                        <button className="h-fit bg-primary/[0.3] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => pkClear(c.name)}>
-                            <Image src={ClearPkIcon} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Pk Clear
-                        </button>
-                        <button className="h-fit bg-primary/[0.4] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetStats(c.name, c.characterClassId)}>
-                            <Image src={ResetStats} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Reset Stats
-                        </button>
+                        {(zenToPkClear && zenToPkClear !== "") && 
+                            <button className="h-fit bg-primary/[0.3] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => pkClear(c.name)}>
+                                <Image src={ClearPkIcon} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Pk Clear
+                            </button>
+                        }
+                        {(zenToResetStats && zenToResetStats !== "") && 
+                            <button className="h-fit bg-primary/[0.4] p-2 rounded-lg px-4 shadow-md shadow-slate-400 text-slate-800 font-sans hover:bg-secondary/[0.5]" onClick={() => resetStats(c.name, c.characterClassId)}>
+                                <Image src={ResetStats} width={25} alt={"add_stats_icon"} className="inline-block mb-1"></Image> Reset Stats
+                            </button>
+                        }
                     </div>
                 </div>
             </div>

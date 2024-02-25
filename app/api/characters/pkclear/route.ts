@@ -5,6 +5,10 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
     try {
+        if(!process.env.NEXT_PUBLIC_ZEN_TO_PKCLEAR || process.env.NEXT_PUBLIC_ZEN_TO_PKCLEAR === ""){
+            return NextResponse.json({message: "Function disabled"}, {status: 400})
+        }
+
         const {name} = await req.json();
     
         //CHECKS
@@ -33,7 +37,7 @@ export async function POST(req: Request){
           return NextResponse.json({message: "Couldn't reach the server, try again later"},{status: 500});
         }
     
-        const zen = +process.env.ZEN_TO_PKCLEAR!
+        const zen = +process.env.NEXT_PUBLIC_ZEN_TO_PKCLEAR!
         //check if has enough money and subtract the amount to reset
         const enoughMoney = await prisma.itemStorage.findFirst({
             where: {
