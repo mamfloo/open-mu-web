@@ -32,9 +32,6 @@ export async function PUT(req: Request){
                 LoginName: session?.user.username
             }
         })
-        console.log('Account:', account);
-        console.log('Old password:', oldPassword);
-        console.log('New password:', newPassword);
         const passwordMatch = await compare(oldPassword, account?.PasswordHash!)
         if(!passwordMatch){
             return NextResponse.json({message: "The old password you inserted isn't correct!"}, {status: 400});

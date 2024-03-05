@@ -15,9 +15,14 @@
 body {
     cursor: url('~/public/img/cursor/Cursor.png'), auto;
 }
-button:hover{
+button:hover, .news-body:hover{
     cursor: url('~/public/img/cursor/CursorGet.png'), auto;
 }
 a:hover{
     cursor: url('~/public/img/cursor/CursorGet.png'), auto;
 }
+
+
+p {
+    white-space: pre;
+} 

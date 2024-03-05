@@ -14,7 +14,6 @@ export default function Account() {
     //set lognName
     async function setName(){
         const session = await getSession();
-        console.log("name ", session?.user.username!)
         setLoginName(session?.user.username!)
     }
 

@@ -41,10 +41,19 @@ export const authOptions: NextAuthOptions = {
             if(!passwordMatch){
                 return null;
             }
+            //find if there is any character that has a GM status
+            const isGm = (await prisma.character.findMany({
+                where: {
+                    AccountId: {
+                        equals: existingUser.Id
+                    }
+                }
+            })).some(c => c.CharacterStatus === 32);
             return {
                 id: existingUser.Id,
                 username: existingUser.LoginName,
-                email: existingUser.EMail
+                email: existingUser.EMail,
+                role: isGm ? "GAME_MASTER" : "USER"
             }
         }
     })
@@ -55,7 +64,8 @@ export const authOptions: NextAuthOptions = {
                 return {
                     ...token,
                     username: user.username,
-                    id: user.id
+                    id: user.id,
+                    role: user.role
                 }
             }
             return token
@@ -66,7 +76,8 @@ export const authOptions: NextAuthOptions = {
                 user: {
                     ...session.user,
                     username: token.username,
-                }
+                    role: token.role
+                },
             }
           },
     }

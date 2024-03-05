@@ -1714,9 +1714,10 @@ model EFMigrationsHistory {
 }
 
 model OpenMuWeb_News {
-  id String @id @db.Uuid
+  id String @id @db.Uuid @default(uuid())
   title String
   body String
-  author String //this is gonna correspond to the author account name(username)
+  author String //this correspond to the author account name(username)
+  creationDate DateTime @default(now())
   @@schema("data")
 }
