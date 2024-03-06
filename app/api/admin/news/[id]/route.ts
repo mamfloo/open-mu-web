@@ -1,12 +1,11 @@
-import { News } from "@/app/_models/news";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request){
+export async function DELETE(req: NextRequest, {params}: {params: {id: string}}){
     try {
-        const news: News = await req.json();
+        const  id = params.id;
         let gmName;
 
         const GM_ROLE_CODE = 32;
@@ -29,19 +28,14 @@ export async function POST(req: Request){
             return NextResponse.json({message: "You can't do this!"}, {status: 500})
         }
 
-        await prisma.openMuWeb_News.create({
-            data: {
-                author: gmName!,
-                title: news.title,
-                body: news.body,
+        const result = await prisma.openMuWeb_News.delete({
+            where: {
+                id: id
             }
         })
-        return NextResponse.json({message: "News added successfully"}, {status: 200});
-    } catch (e){
+        return NextResponse.json({message: "News deleted successfully"}, {status: 200});
+    }catch (e){
         console.log("error", e);
         return NextResponse.json({message: "There was a problem try again later"}, {status: 400});
     }
-
-
-
-} 
+}

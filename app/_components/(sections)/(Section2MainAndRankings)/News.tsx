@@ -7,12 +7,17 @@ import ChangePageButton from './(components)/ChangePageButton';
 
 export default async function News({page} : {page: number}) {
 
+  page = page >= 0 ? page : 0;
+
   const NEWS_PER_PAGE = 4;
   const SKIP = (page * NEWS_PER_PAGE) || 0; 
 
   const news: NewsComplete[] = await prisma.openMuWeb_News.findMany({
     skip: SKIP,
     take: NEWS_PER_PAGE,
+    orderBy: {
+      creationDate: 'desc'
+    }
   });
 
   return (
@@ -20,11 +25,11 @@ export default async function News({page} : {page: number}) {
       <h1 className='text-2xl text-primary font-semibold mb-4'>NEWS</h1>
       <hr className='h-[2px] bg-primary/[0.4] mb-6'/>
         {news.map((n, i) => (
-          <NewsCard news={n} key={i}/>
+          <NewsCard news={n} key={i} shortVersion={true}/>
         ))}
         <div className='flex'>
-          {((!page || page == 0) && news.length > 3) &&<ChangePageButton forward={true}/>}
           {(page > 0) && <ChangePageButton forward={false}/>}
+          {((!page || page >= 0) && news.length > 3) &&<ChangePageButton forward={true}/>}
         </div>
     </div>
   )

@@ -8,7 +8,6 @@ export default function ChangePageButton({forward} : {forward: boolean}) {
 
     const searchParams = useSearchParams();
     const page = parseInt(searchParams.get("page") || "0");
-    console.log("param", page);
     const router = useRouter();
 
     function onClickAction(){
@@ -21,7 +20,7 @@ export default function ChangePageButton({forward} : {forward: boolean}) {
 
   return (
     <button onClick={onClickAction} className='mt-6 bg-secondary/[0.6] hover:bg-secondary/[0.9] p-1 rounded-lg px-2  mx-auto shadow-xl text-primary'>
-        {forward? "Next page" : "Prev page"}
+        {forward? "Next page >" : "< Prev page"}
     </button>
   )
 }

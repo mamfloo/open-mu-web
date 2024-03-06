@@ -13,7 +13,6 @@ export async function PUT(req: Request){
         //check if the right user is sending the request
         const session = await getServerSession(authOptions);
         if(session){
-            console.log("name", session.user.username)
             if(!session.user.username){
                 return NextResponse.json({message: "You can't do this!"}, {status: 400})
             }

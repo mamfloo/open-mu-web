@@ -25,8 +25,7 @@ export async function GET(req: NextRequest,{ params } : { params : { guildName: 
                 Name: gm.Character.Name,
                 guildStatus: gm.Status
             }
-        })
-        console.log(gmMapped);       
+        })     
         return NextResponse.json(gmMapped, {status: 200})
     }catch (e) {
         return NextResponse.json({message: "Guild wasn't found"}, {status: 400});
